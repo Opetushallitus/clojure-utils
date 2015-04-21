@@ -12,15 +12,16 @@
 ;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ;; European Union Public Licence for more details.
 
-(ns oph.infra.http-util-test
+(ns oph.common.util.http-util-test
   (:require [clojure.test :refer [deftest testing is are]]
             [oph.common.util.http-util :refer :all]))
 
 (deftest file-download-response-test
   (testing "file-download-response"
     (testing "Palauttaa datan unicode-merkkijonona, jos koodausta ei ole määritelty"
-      (is (= "åäö" (-> (file-download-response "åäö" "foo.txt" "text/plain")
-                     :body))))
+      (is (= "åäö" (-> (file-download-response (.getBytes "åäö") "foo.txt" "text/plain")
+                     :body
+                     slurp))))
 
     (testing "Palauttaa datan määritellyssä koodauksessa"
       (is (= "åäö" (-> (file-download-response "åäö" "foo.txt" "text/plain"
