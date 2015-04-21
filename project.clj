@@ -16,13 +16,19 @@
   :description "OPH Clojure-utils"
   :dependencies [[org.clojure/clojure "1.5.1"]
                  [ring/ring-core "1.2.1"]
-                 [org.clojure/tools.logging "0.2.6"]]
+                 [org.clojure/tools.logging "0.2.6"]
+
+                 [cheshire "5.4.0"]
+                 [clj-http "1.0.1"]
+                 [clj-time "0.9.0"]
+                 [com.cemerick/valip "0.3.2"]
+                 [prismatic/schema "0.4.0"]]
   :plugins [[test2junit "1.0.1"]
             [lein-typed "0.3.5"]]
   :source-paths ["src/clj"]
   :test-paths ["test/clj"]
   :test-selectors {:kaikki (constantly true)
-                   :default  (complement (some-fn :integraatio :performance)) 
+                   :default  (complement (some-fn :integraatio :performance))
                    :performance :performance
                    :integraatio :integraatio}
   :jar-name "clojure-utils.jar")
