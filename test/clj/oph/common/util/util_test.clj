@@ -113,3 +113,25 @@
               (retrying Exception 3 (throw (Exception. (str (swap! n inc)))))
               (catch Exception _)))
           (is (= @log [[:warn "1"] [:warn "2"]])))))))
+
+(deftest some-value-with-not-found-test
+  (is (nil? (some-value-with :name "John"
+                             [{:name "Alice", :age 25},
+                              {:name "Bob", :age 43}]))))
+
+(deftest some-value-with-found-test
+  (is (= (some-value-with :name "John"
+                          [{:name "Alice", :age 25},
+                           {:name "John", :age 31},
+                           {:name "Bob", :age 43},
+                           {:name "John", :age 70}])
+         {:name "John", :age 31})))
+
+(deftest poista-tyhjat-test
+  (are [parametrit odotettu-tulos]
+       (= (poista-tyhjat parametrit) odotettu-tulos)
+       {:a true} {:a true}
+       {:a 1} {:a 1}
+       {:a "string"} {:a "string"}
+       {:a ""} {}
+       {:a nil} {}))
