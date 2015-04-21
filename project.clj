@@ -18,10 +18,13 @@
                  [ring/ring-core "1.2.1"]
                  [org.clojure/tools.logging "0.2.6"]
 
+                 [ch.qos.logback/logback-classic "1.0.13"]
                  [cheshire "5.4.0"]
                  [clj-http "1.0.1"]
                  [clj-time "0.9.0"]
                  [com.cemerick/valip "0.3.2"]
+                 [compojure "1.3.3"]
+                 [org.slf4j/slf4j-api "1.7.5"]
                  [prismatic/schema "0.4.0"]]
   :plugins [[test2junit "1.0.1"]
             [lein-typed "0.3.5"]]
