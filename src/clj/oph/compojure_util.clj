@@ -55,3 +55,11 @@
     `(~compojure-macro ~path ~args
        (autorisoitu-transaktio ~auth-map ~toiminto ~konteksti-arg
          ~@body))))
+
+(defmacro defapi-within-transaction
+  "Esittelee rajapinta-funktion sisältäen käyttöoikeuksien tarkastamisen. Olettaa, että ollaan transaktion sisällä."
+  [auth-map toiminto konteksti-arg http-method path args & body]
+  (let [compojure-macro (get http-compojure http-method)
+        _ (log/info (str "declared " toiminto " on API: " http-method " at " path args))]
+    `(~compojure-macro ~path ~args
+       (autorisoi ~auth-map ~toiminto ~konteksti-arg ~@body))))
