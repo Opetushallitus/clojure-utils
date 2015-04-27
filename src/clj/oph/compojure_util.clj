@@ -16,8 +16,7 @@
   (:require [clojure.tools.logging :as log]
             compojure.core
             [korma.db :as db]
-            [oph.common.util.util :refer [retrying]]
-            [compojure.api.sweet :as c]))
+            [oph.common.util.util :refer [retrying]]))
 
 (def http-compojure {:get 'compojure.core/GET
                      :post 'compojure.core/POST
