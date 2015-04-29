@@ -88,10 +88,13 @@
 (defmacro update-unique
   "Wraps korma.core/update, updates exactly one row. Throws if row count is not 1. Returns the number of updated rows (1)."
   [entity & body]
-  `(let [[count#] (-> (sql/update* ~entity)
-                    ~@body
-                    (dissoc :results)
-                    sql/exec)]
+  `(let [count# (-> (sql/update* ~entity)
+                  ~@body
+                  (dissoc :results)
+                  sql/exec)
+         count# (if (sequential? count#) ;; JDBC:n vanha versio palauttaa vektorin, uusi pelkän luvun
+                  (first count#)
+                  count#)]
      (assert (= count# 1) (str "Expected one updated row, got " count#))
      count#))
 
