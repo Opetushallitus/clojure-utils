@@ -4,6 +4,7 @@
            org.joda.time.LocalDate)
   (:require  korma.db
              [korma.core :as sql]
+             [korma.sql.engine :as eng]
              [clj-time.coerce :as time-coerce]
              [clj-time.core :as time]))
 
@@ -106,3 +107,8 @@
 ;; Tämä makro tekee kopion entitystä uudelle nimelle.
 (defmacro defalias [alias entity]
   `(def ~alias (entity-alias ~entity ~(name alias))))
+
+(defn ilike
+  "Korma-funktio Postgresql:n ilike-vertailulle"
+  [k v]
+  (eng/infix k "ILIKE" v))
