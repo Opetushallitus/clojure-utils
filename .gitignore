@@ -4,7 +4,9 @@
 .lein-plugins/
 .lein-repl-history
 .nrepl-port
+/*.iml
 /.classpath
+/.idea/
 /.project
 /bin
 /checkouts/
