@@ -6,7 +6,8 @@
              [korma.core :as sql]
              [korma.sql.engine :as eng]
              [clj-time.coerce :as time-coerce]
-             [clj-time.core :as time]))
+             [clj-time.core :as time]
+             [oph.common.util.util :refer [->vector]]))
 
 (defn korma-asetukset
   "Muuttaa asetustiedoston db-avaimen arvon Korman odottamaan muotoon."
@@ -98,6 +99,21 @@
                   count#)]
      (assert (= count# 1) (str "Expected one updated row, got " count#))
      count#))
+
+(defn insert-or-update
+  "Inserts row if it doesn't exist yet, updates existing row if it does"
+  [entity pk-fields row]
+  (let [pk-fields (->vector pk-fields)
+        pk-values (map row pk-fields)]
+    (if (or (some nil? pk-values)
+            (zero? (sql/update entity
+                     (sql/set-fields (apply dissoc row pk-fields))
+                     (sql/where (zipmap pk-fields pk-values)))))
+      (sql/insert entity
+        (sql/values row))
+      (select-unique entity
+        (sql/where (zipmap pk-fields pk-values))))))
+
 
 (defn entity-alias [entity alias]
   (assoc entity :name alias

@@ -229,3 +229,9 @@
   [m]
   (let [f (fn [[k v]] (if (keyword-syntax? k) [(keyword k) v] [k v]))]
     (clojure.walk/postwalk (fn [x] (if (map? x) (into {} (map f x)) x)) m)))
+
+(defn ->vector [item]
+  (when item
+    (if (vector? item)
+      item
+      [item])))
