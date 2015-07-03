@@ -259,3 +259,6 @@
             ret)
           (next keys)))
       ret)))
+
+(defn remove-nil-vals [m]
+  (into {} (remove (comp nil? val) m)))
