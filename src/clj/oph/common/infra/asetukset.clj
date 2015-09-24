@@ -69,5 +69,8 @@
 (defn lue-asetukset
   [oletukset tyypit asetustiedosto-polku]
   (let [asetus-map (tulkitse-asetukset (lue-asetukset-tiedostosta asetustiedosto-polku))
-        korjattu-map (deep-merge oletukset asetus-map)]
-      (coerce-asetukset korjattu-map tyypit)))
+        korjattu-map (deep-merge oletukset asetus-map)
+        asetukset (coerce-asetukset korjattu-map tyypit)]
+    (if (instance? schema.utils.ErrorContainer asetukset)
+      (throw (ex-info "Virheellinen asetustiedosto" (:error asetukset)))
+      asetukset)))
