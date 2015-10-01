@@ -26,7 +26,7 @@
 (defn throwable->simplestring [t]
   (let [msg (.getMessage t)
         type (.toString (.getClass t))]
-    (str "msg: " msg "\n" "type: " type)))
+    (str "type: " type)))
 
 (defn wrap-poikkeusten-logitus
   [handler]
