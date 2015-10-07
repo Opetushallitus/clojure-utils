@@ -119,6 +119,14 @@
       (select-unique entity
         (sql/where (zipmap pk-fields pk-values))))))
 
+(defn insert-if-not-exists
+  "Inserts row if it doesn't exist yet"
+  [entity row]
+  (when-not (seq (sql/select entity
+                   (sql/where row)))
+    (sql/insert entity
+      (sql/values row))))
+
 
 (defn entity-alias [entity alias]
   (assoc entity :name alias
