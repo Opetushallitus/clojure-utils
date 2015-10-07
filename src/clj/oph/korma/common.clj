@@ -106,9 +106,14 @@
   (let [pk-fields (->vector pk-fields)
         pk-values (map row pk-fields)]
     (if (or (some nil? pk-values)
-            (zero? (sql/update entity
-                     (sql/set-fields (apply dissoc row pk-fields))
-                     (sql/where (zipmap pk-fields pk-values)))))
+            (let [result (sql/update entity
+                           (sql/set-fields (apply dissoc row pk-fields))
+                           (sql/where (zipmap pk-fields pk-values)))]
+              ;; JDBC:n vanha versio palauttaa joko nil tai mapin uusista arvoista,
+              ;; uusi versio päivittyneiden rivien lukumäärän.
+              (or (nil? result)
+                  (when (number? result)
+                    (zero? result)))))
       (sql/insert entity
         (sql/values row))
       (select-unique entity
