@@ -149,3 +149,26 @@
          [:key1]               {:key1 :val1}
          [:key1 [:key2 :key3]] {:key1 :val1, :key3 :val2}
          [:key3 [:key4 :key5]] {})))
+
+(deftest merkitse-voimassaolevat-test
+  (testing
+    "merkitse voimassaolevat:"
+    (let [voimassaolon-paivitysfunktio (fn [entity arvo] :paivitetty)]
+      (testing
+        "päivittää kentän alkioiden voimassa-kentät:"
+        (are [kuvaus entity kentta]
+             (is (every? #{:paivitetty}
+                         (map :voimassa
+                              (get-in
+                                (merkitse-voimassaolevat entity kentta voimassaolon-paivitysfunktio)
+                                [kentta]))) kuvaus)
+             "kentän vektori on tyhjä" {:kentta [{}]} :kentta
+             "kentän vektorissa on yksi arvo" {:kentta [{}]} :kentta
+             "kentän vektorissa on useampi arvo" {:kentta [{}, {}]} :kentta))
+      (testing
+        "palauttaa päivitetyn kentän vektorina:"
+        (is (vector?
+              (get-in
+                (merkitse-voimassaolevat {:kentta [{}]} :kentta voimassaolon-paivitysfunktio)
+                [:kentta]))
+            "kenttä on vektori")))))

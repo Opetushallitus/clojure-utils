@@ -193,6 +193,8 @@
 (defmacro retrying [expected-throwable attempts & body]
   `(retrying* ~expected-throwable ~attempts (fn [] ~@body)))
 
+(def time-forever (time/local-date 2199 1 1))
+
 (defn pvm-menneisyydessa?
   [pvm]
   {:pre [(not (nil? pvm))]}
@@ -210,6 +212,13 @@
 
 (def pvm-tuleva-tai-tanaan?
   (complement pvm-menneisyydessa?))
+
+(defn merkitse-voimassaolevat
+  [entity avain f]
+  (update-in entity [avain]
+    #(vec
+       (for [arvo %]
+         (assoc arvo :voimassa (f entity arvo))))))
 
 (defn paivita-arvot [m avaimet f]
   (reduce #(update-in % [%2] f) m avaimet))
