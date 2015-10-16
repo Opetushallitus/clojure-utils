@@ -271,3 +271,10 @@
 
 (defn remove-nil-vals [m]
   (into {} (remove (comp nil? val) m)))
+
+(defn muutos 
+  "Palauttaa kahden mapin eroavaisuudet"
+  [vanha uusi]
+  (into {} (for [k (clojure.set/union (set (keys vanha)) (set (keys uusi)))
+                 :when (not= (get vanha k) (get uusi k))]
+             [k [(get vanha k) (get uusi k)]])))
