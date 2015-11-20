@@ -141,3 +141,10 @@
   "Korma-funktio Postgresql:n ilike-vertailulle"
   [k v]
   (eng/infix k "ILIKE" v))
+
+(defn rajaa-kentilla
+  [query kentat teksti]
+  (let [ehdot (for [kentta kentat]
+                {kentta [ilike (str "%" teksti "%")]})]
+    (sql/where query
+      (apply or ehdot))))
