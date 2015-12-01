@@ -70,6 +70,25 @@
   ([req vseq schema]
     (cachable-json-response req (s/validate schema vseq))))
 
+(defn cachable-response
+  ([req vseq]
+   (let [cache-muokattu (get-cache-date req)
+         vseq-muokattu (->
+                         (uusin-muokkausaika vseq [:muutettuaika])
+                         (.withMillisOfSecond 0))]
+     (if (> 0 (compare cache-muokattu vseq-muokattu))
+       {:status 200
+        :body vseq
+        :headers (get-cache-headers vseq-muokattu)}
+       {:status 304}))))
+
+(defn response-or-404
+  ([data]
+    (if (nil? data)
+      {:status 404}
+      {:status 200
+       :body data})))
+
 (defn json-response
   ([data]
     (if (nil? data)
