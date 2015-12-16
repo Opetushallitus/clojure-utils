@@ -1,7 +1,7 @@
 Clojure-utils
 =============
 
-Yleiskäyttöistä koodia liittyen OPH:n Clojure-projektien tarpeisiin. 
+Yleiskäyttöistä koodia liittyen Opetushallituksen Clojure-projektien tarpeisiin. 
 
 # Käyttäviä projekteja
 
@@ -9,5 +9,5 @@ Yleiskäyttöistä koodia liittyen OPH:n Clojure-projektien tarpeisiin.
 * [Aipal](https://github.com/Opetushallitus/aipal)
 * [Näyttötutkintohaku.fi](https://github.com/Opetushallitus/aituhaku)
 * [osaan.fi](https://github.com/Opetushallitus/osaan.fi)
-
+* CSC:n [Avop](https://github.com/CSC-IT-Center-for-Science/avop)
 
