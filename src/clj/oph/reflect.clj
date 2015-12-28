@@ -35,4 +35,4 @@
        (empty? (second f))
     (var? f)
       (= '([]) (:arglists (meta f)))
-    (true? true) false))
+    :else false))
