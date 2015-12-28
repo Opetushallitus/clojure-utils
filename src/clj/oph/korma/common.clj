@@ -73,13 +73,13 @@
      (sql/transform sql-timestamp->joda-datetime)
      ~@body))
 
-(defn ^:private unique-or-nil
+(defn unique-or-nil
   [results]
   (let [[result & more] results]
     (assert (empty? more) "Expected one result, got more")
     result))
 
-(defn ^:private unique
+(defn unique
   [results]
   (let [result (unique-or-nil results)]
     (assert result "Expected one result, got zero")
