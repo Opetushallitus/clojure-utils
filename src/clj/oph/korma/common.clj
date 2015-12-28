@@ -73,19 +73,37 @@
      (sql/transform sql-timestamp->joda-datetime)
      ~@body))
 
+(defn ^:private unique-or-nil
+  [results]
+  (let [[result & more] results]
+    (assert (empty? more) "Expected one result, got more")
+    result))
+
+(defn ^:private unique
+  [results]
+  (let [result (unique-or-nil results)]
+    (assert result "Expected one result, got zero")
+    result))
+
+(defn select-unique-or-nil*
+  "Replaces korma.core/select*, creates a query that returns unique result or nil if none found. Throws if result is not unique."
+  [entity]
+  (-> (sql/select* entity) (sql/post-query unique-or-nil)))
+
+(defn select-unique*
+  "Replaces korma.core/select*, creates a query that returns unique result. Throws if result is not unique."
+  [entity]
+  (-> (sql/select* entity) (sql/post-query unique)))
+
 (defmacro select-unique-or-nil
   "Wraps korma.core/select, returns unique result or nil if none found. Throws if result is not unique."
   [entity & body]
-  `(let [[first# & rest#] (sql/select ~entity ~@body)]
-     (assert (empty? rest#) "Expected one result, got more")
-     first#))
+  `(sql/select ~entity (sql/post-query unique-or-nil) ~@body))
 
 (defmacro select-unique
   "Wraps korma.core/select, returns unique result. Throws if result is not unique."
   [entity & body]
-  `(let [result# (select-unique-or-nil ~entity ~@body)]
-     (assert result# "Expected one result, got zero")
-     result#))
+  `(sql/select ~entity (sql/post-query unique) ~@body))
 
 (defmacro update-unique
   "Wraps korma.core/update, updates exactly one row. Throws if row count is not 1. Returns the number of updated rows (1)."
