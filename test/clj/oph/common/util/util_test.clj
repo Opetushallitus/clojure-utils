@@ -43,6 +43,15 @@
     (is (= (time/date-time 2013 2 1) (uusin-muokkausaika [test-map] [:muokattu] [:foo :muokattu])))
     (is (= (time/date-time 2013 4 1) (uusin-muokkausaika [test-map] [:muokattu] [:foo :muokattu] [:bar :muokattu])))))
 
+(deftest uusin-muokkausaika-tyhja
+  (testing "tyhjä arvojoukko -> oletusarvo"
+    (is (= (time/date-time 1970 1 1 0 0 1) (uusin-muokkausaika '() [:fu])))))
+
+(deftest uusin-muokkausaika-eiloydy
+  (testing "uusinta muokkausaikaa ei löydy arvojen joukosta"
+    (let [test-map {:mookattu :b}]
+      (is (nil? (uusin-muokkausaika [test-map] [:muokattu]))))))
+
 (deftest sisaltaako-kentat-test
   (let [test-data [{:etunimi "Ahto"
                     :sukunimi "Simakuutio"}

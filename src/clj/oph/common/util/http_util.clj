@@ -5,7 +5,7 @@
     [clj-time.format :refer [formatter formatters parse unparse parse-local-date with-locale]]
     [clj-time.coerce :as time-coerce]
     [clj-time.core :as time]
-    [oph.common.util.util :refer [uusin-muokkausaika]]
+    [oph.common.util.util :refer [uusin-muokkausaika-tai-nykyhetki]]
     [schema.core :as s] )
   (:import java.io.ByteArrayInputStream))
 
@@ -55,12 +55,14 @@
    "Last-Modified" (format-http-date last-modified)
    "Content-Type" "application/json"})
 
+
+; Jos sisällön viimeisintä muokkausaikaa ei ole, käytetään nykyhetkeä  
 (defn cachable-json-response
   "Cheshiren avulla REST response, jossa on mukana cache- ja json-headerit"
   ([req vseq]
     (let [cache-muokattu (get-cache-date req)
           vseq-muokattu (->
-                          (uusin-muokkausaika vseq [:muutettuaika])
+                          (uusin-muokkausaika-tai-nykyhetki vseq [:muutettuaika])
                           (.withMillisOfSecond 0))]
       (if (> 0 (compare cache-muokattu vseq-muokattu))
         {:status 200
@@ -70,11 +72,12 @@
   ([req vseq schema]
     (cachable-json-response req (s/validate schema vseq))))
 
+; Jos sisällön viimeisintä muokkausaikaa ei ole, käytetään nykyhetkeä  
 (defn cachable-response
   ([req vseq]
    (let [cache-muokattu (get-cache-date req)
          vseq-muokattu (->
-                         (uusin-muokkausaika vseq [:muutettuaika])
+                         (uusin-muokkausaika-tai-nykyhetki vseq [:muutettuaika])
                          (.withMillisOfSecond 0))]
      (if (> 0 (compare cache-muokattu vseq-muokattu))
        {:status 200
