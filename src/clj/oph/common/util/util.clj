@@ -151,136 +151,136 @@
   [arvot & polut]
   (or (uusin-muokkausaika arvot polut) (time/now)))
 
-  (defn sisaltaako-kentat?
-    "Predikaatti joka palauttaa true, jos annettujen kenttien sisältö sisältää annetun termin. Kirjainkoolla ei ole väliä.
-   Kenttien sisältö konkatenoidaan yhteen välilyönnillä erotettuna."
-    [entity kentat termi]
-    (let [termi (string/lower-case termi)
-          kenttien-sisallot (for [kentta kentat] (entity kentta))
-          sisalto (string/lower-case (string/join " " kenttien-sisallot))]
-      (.contains sisalto termi)))
+(defn sisaltaako-kentat?
+  "Predikaatti joka palauttaa true, jos annettujen kenttien sisältö sisältää annetun termin. Kirjainkoolla ei ole väliä.
+ Kenttien sisältö konkatenoidaan yhteen välilyönnillä erotettuna."
+  [entity kentat termi]
+  (let [termi (string/lower-case termi)
+        kenttien-sisallot (for [kentta kentat] (entity kentta))
+        sisalto (string/lower-case (string/join " " kenttien-sisallot))]
+    (.contains sisalto termi)))
 
-  (defn some-value [pred coll]
-    (first (filter pred coll)))
+(defn some-value [pred coll]
+  (first (filter pred coll)))
 
-  (defn some-value-with [f expected coll]
-    (some-value #(= (f %) expected) coll))
+(defn some-value-with [f expected coll]
+  (some-value #(= (f %) expected) coll))
 
-  (defn map-by
-    "Kuten group-by, mutta jättää vain viimeisen täsmäävän alkion"
-    [f coll]
-    (into {} (for [item coll
-                   :let [k (f item)]
-                   :when (not (nil? k))]
-               [k item])))
+(defn map-by
+  "Kuten group-by, mutta jättää vain viimeisen täsmäävän alkion"
+  [f coll]
+  (into {} (for [item coll
+                 :let [k (f item)]
+                 :when (not (nil? k))]
+             [k item])))
 
-  (defn map-values [f m]
-    "Applies f to each value in m and returns the resulting map"
-    (into {} (for [[k v] m]
-               [k (f v)])))
+(defn map-values [f m]
+  "Applies f to each value in m and returns the resulting map"
+  (into {} (for [[k v] m]
+             [k (f v)])))
 
-  (defn retrying* [expected-throwable attempts f]
-    {:pre [(isa? expected-throwable Throwable)
-           (pos? attempts)]}
-    (if (= attempts 1)
+(defn retrying* [expected-throwable attempts f]
+  {:pre [(isa? expected-throwable Throwable)
+         (pos? attempts)]}
+  (if (= attempts 1)
+    (f)
+    (try
       (f)
-      (try
-        (f)
-        (catch Throwable t
-          (if (instance? expected-throwable t)
-            (let [attempts-left (dec attempts)]
-              (log/warn t "Operaatio epäonnistui, yritetään uudelleen vielä"
-                        (if (= attempts-left 1)
-                          "kerran"
-                          (str attempts-left " kertaa")))
-              (retrying* expected-throwable attempts-left f))
-            (throw t))))))
+      (catch Throwable t
+        (if (instance? expected-throwable t)
+          (let [attempts-left (dec attempts)]
+            (log/warn t "Operaatio epäonnistui, yritetään uudelleen vielä"
+                      (if (= attempts-left 1)
+                        "kerran"
+                        (str attempts-left " kertaa")))
+            (retrying* expected-throwable attempts-left f))
+          (throw t))))))
 
-  (defmacro retrying [expected-throwable attempts & body]
-    `(retrying* ~expected-throwable ~attempts (fn [] ~@body)))
+(defmacro retrying [expected-throwable attempts & body]
+  `(retrying* ~expected-throwable ~attempts (fn [] ~@body)))
 
-  (def time-forever (time/local-date 2199 1 1))
+(def time-forever (time/local-date 2199 1 1))
 
-  (defn pvm-menneisyydessa?
-    [pvm]
-    {:pre [(not (nil? pvm))]}
-    (let [nytpvm (time/today)]
-      (time/after? nytpvm pvm)))
+(defn pvm-menneisyydessa?
+  [pvm]
+  {:pre [(not (nil? pvm))]}
+  (let [nytpvm (time/today)]
+    (time/after? nytpvm pvm)))
 
-  (defn pvm-tulevaisuudessa?
-    [pvm]
-    {:pre [(not (nil? pvm))]}
-    (let [nytpvm (time/today)]
-      (time/before? nytpvm pvm)))
+(defn pvm-tulevaisuudessa?
+  [pvm]
+  {:pre [(not (nil? pvm))]}
+  (let [nytpvm (time/today)]
+    (time/before? nytpvm pvm)))
 
-  (def pvm-mennyt-tai-tanaan?
-    (complement pvm-tulevaisuudessa?))
+(def pvm-mennyt-tai-tanaan?
+  (complement pvm-tulevaisuudessa?))
 
-  (def pvm-tuleva-tai-tanaan?
-    (complement pvm-menneisyydessa?))
+(def pvm-tuleva-tai-tanaan?
+  (complement pvm-menneisyydessa?))
 
-  (defn merkitse-voimassaolevat
-    [entity avain f]
-    (update-in entity [avain]
-      #(vec
-         (for [arvo %]
-           (assoc arvo :voimassa (f entity arvo))))))
+(defn merkitse-voimassaolevat
+  [entity avain f]
+  (update-in entity [avain]
+    #(vec
+       (for [arvo %]
+         (assoc arvo :voimassa (f entity arvo))))))
 
-  (defn paivita-arvot [m avaimet f]
-    (reduce #(update-in % [%2] f) m avaimet))
+(defn paivita-arvot [m avaimet f]
+  (reduce #(update-in % [%2] f) m avaimet))
 
-  (defn poista-tyhjat [m]
-    (into {} (filter (comp #(or (instance? Boolean %) (number? %) (not-empty %)) val) m)))
+(defn poista-tyhjat [m]
+  (into {} (filter (comp #(or (instance? Boolean %) (number? %) (not-empty %)) val) m)))
 
-  (defn keyword-syntax?
-    "Keywordit muutetaan samalla syntaksilla kun wrap-keyword-params:
+(defn keyword-syntax?
+  "Keywordit muutetaan samalla syntaksilla kun wrap-keyword-params:
    https://github.com/ring-clojure/ring/blob/1.3.1/ring-core/src/ring/middleware/keyword_params.clj"
-    [s]
-    (when (string? s)
-      (re-matches #"[A-Za-z*+!_?-][A-Za-z0-9*+!_?-]*" s)))
+  [s]
+  (when (string? s)
+    (re-matches #"[A-Za-z*+!_?-][A-Za-z0-9*+!_?-]*" s)))
 
-  (defn muunna-avainsanoiksi
-    "Päivitetty versio clojure.walk/keywordize-keys funktiosta, koska alkuperäinen muuntaa myös numerolla alkavan symbolin avainsanaksi."
-    [m]
-    (let [f (fn [[k v]] (if (keyword-syntax? k) [(keyword k) v] [k v]))]
-      (clojure.walk/postwalk (fn [x] (if (map? x) (into {} (map f x)) x)) m)))
+(defn muunna-avainsanoiksi
+  "Päivitetty versio clojure.walk/keywordize-keys funktiosta, koska alkuperäinen muuntaa myös numerolla alkavan symbolin avainsanaksi."
+  [m]
+  (let [f (fn [[k v]] (if (keyword-syntax? k) [(keyword k) v] [k v]))]
+    (clojure.walk/postwalk (fn [x] (if (map? x) (into {} (map f x)) x)) m)))
 
-  (defn ->vector [item]
-    (when item
-      (if (vector? item)
-        item
-        [item])))
+(defn ->vector [item]
+  (when item
+    (if (vector? item)
+      item
+      [item])))
 
-  (defn update-in-if-exists [m [k & ks] f & args]
-    (if (and (associative? m) (contains? m k))
-      (if ks
-        (assoc m k (apply update-in-if-exists (get m k) ks f args))
-        (assoc m k (apply f (get m k) args)))
-      m))
+(defn update-in-if-exists [m [k & ks] f & args]
+  (if (and (associative? m) (contains? m k))
+    (if ks
+      (assoc m k (apply update-in-if-exists (get m k) ks f args))
+      (assoc m k (apply f (get m k) args)))
+    m))
 
-  (defn select-and-rename-keys
-    "Poimii mapista annetut avaimet. Jos avain on muotoa [:a :b], vaihtaa samalla avaimen nimen :a -> :b."
-    [map keys]
-    (loop [ret {} keys (seq keys)]
-      (if keys
-        (let [key (first keys)
-              [from to] (if (coll? key)
-                          key
-                          [key key])
-              entry (. clojure.lang.RT (find map from))]
-          (recur
-            (if entry
-              (conj ret [to (val entry)])
-              ret)
-            (next keys)))
-        ret)))
+(defn select-and-rename-keys
+  "Poimii mapista annetut avaimet. Jos avain on muotoa [:a :b], vaihtaa samalla avaimen nimen :a -> :b."
+  [map keys]
+  (loop [ret {} keys (seq keys)]
+    (if keys
+      (let [key (first keys)
+            [from to] (if (coll? key)
+                        key
+                        [key key])
+            entry (. clojure.lang.RT (find map from))]
+        (recur
+          (if entry
+            (conj ret [to (val entry)])
+            ret)
+          (next keys)))
+      ret)))
 
-  (defn remove-nil-vals [m]
-    (into {} (remove (comp nil? val) m)))
+(defn remove-nil-vals [m]
+  (into {} (remove (comp nil? val) m)))
 
-  (defn muutos 
-    "Palauttaa kahden mapin eroavaisuudet"
-    [vanha uusi]
-    (into {} (for [k (clojure.set/union (set (keys vanha)) (set (keys uusi)))
-                   :when (not= (get vanha k) (get uusi k))]
-               [k [(get vanha k) (get uusi k)]])))
+(defn muutos
+  "Palauttaa kahden mapin eroavaisuudet"
+  [vanha uusi]
+  (into {} (for [k (clojure.set/union (set (keys vanha)) (set (keys uusi)))
+                 :when (not= (get vanha k) (get uusi k))]
+             [k [(get vanha k) (get uusi k)]])))
