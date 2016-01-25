@@ -118,6 +118,19 @@
      (assert (= count# 1) (str "Expected one updated row, got " count#))
      count#))
 
+(defmacro delete-unique
+  "Wraps korma.core/delete, deletes exactly one row. Throws if row count is not 1. Returns the number of deleted rows (1)."
+  [entity & body]
+  `(let [count# (-> (sql/delete* ~entity)
+                  ~@body
+                  (dissoc :results)
+                  sql/exec)
+         count# (if (sequential? count#) ;; JDBC:n vanha versio palauttaa vektorin, uusi pelkän luvun
+                  (first count#)
+                  count#)]
+     (assert (= count# 1) (str "Expected one deleted row, got " count#))
+     count#))
+
 (defn insert-or-update
   "Inserts row if it doesn't exist yet, updates existing row if it does"
   [entity pk-fields row]
