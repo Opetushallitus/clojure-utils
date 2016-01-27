@@ -23,15 +23,16 @@
 (defn sanitize
   "replaces linefeeds with blanks and limits the length"
   [s]
-  {:pre [clojure.core/string?]}
+  {:pre [clojure.core/string? s]}
   (let [ln (min (.length s) maxlength)]
     (-> s
       (str/replace "\n" "!")
       (str/replace "\r" "!")
       (.substring 0 ln))))
 
-(defn logita [virheenUrl userAgent virheviesti stackTrace cause]
+(defn logita
   "Tarkoitus on wrapata tämä sopivaan compojure-reittiin"
+   [virheenUrl userAgent virheviesti stackTrace cause]
   (let [rivinvaihto "\n"]
     (log/info (str rivinvaihto
                 "--- Javascript virhe ---" rivinvaihto

@@ -174,8 +174,9 @@
                  :when (not (nil? k))]
              [k item])))
 
-(defn map-values [f m]
+(defn map-values
   "Applies f to each value in m and returns the resulting map"
+   [f m]
   (into {} (for [[k v] m]
              [k (f v)])))
 
