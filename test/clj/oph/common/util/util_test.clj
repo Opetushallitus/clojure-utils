@@ -90,38 +90,38 @@
                :value "b"}}))))
 
 (deftest retrying-test
-  "Testaa transaktio retry-logiikan toiminnan"
-  (let [log (atom [])]
-    (with-redefs [log/log* (fn [_ level e _]
-                             (swap! log conj [level (.getMessage e)]))]
-      (testing "retrying"
-        (testing "suorittaa annetun koodilohkon ja palauttaa sen arvon"
-          (is (= (retrying Exception 10 :foo) :foo)))
+  (testing "Testaa transaktio retry-logiikan toiminnan"
+    (let [log (atom [])]
+      (with-redefs [log/log* (fn [_ level e _]
+                               (swap! log conj [level (.getMessage e)]))]
+        (testing "retrying"
+          (testing "suorittaa annetun koodilohkon ja palauttaa sen arvon"
+            (is (= (retrying Exception 10 :foo) :foo)))
 
-        (testing "suorittaa annetun koodilohkon uudelleen, jos se heittää poikkeuksen"
-          (let [n (atom 0)]
-            (is (= (retrying Exception 10 (if (< (swap! n inc) 3)
-                                            (throw (Exception.))
-                                            @n))
-                   3))))
+          (testing "suorittaa annetun koodilohkon uudelleen, jos se heittää poikkeuksen"
+            (let [n (atom 0)]
+              (is (= (retrying Exception 10 (if (< (swap! n inc) 3)
+                                              (throw (Exception.))
+                                              @n))
+                     3))))
 
-        (testing "ei suorita koodilohkoa uudelleen, jos poikkeus ei ole annetun tyyppinen"
-          (let [n (atom 0)]
-            (is (thrown-with-msg? Error #"1"
-                  (retrying Exception 10 (throw (Error. (str (swap! n inc)))))))))
+          (testing "ei suorita koodilohkoa uudelleen, jos poikkeus ei ole annetun tyyppinen"
+            (let [n (atom 0)]
+              (is (thrown-with-msg? Error #"1"
+                    (retrying Exception 10 (throw (Error. (str (swap! n inc)))))))))
 
-        (testing "päästää poikkeuksen läpi annetun yritysmäärän jälkeen"
-          (let [n (atom 0)]
-            (is (thrown-with-msg? Exception #"10"
-                  (retrying Exception 10 (throw (Exception. (str (swap! n inc)))))))))
+          (testing "päästää poikkeuksen läpi annetun yritysmäärän jälkeen"
+            (let [n (atom 0)]
+              (is (thrown-with-msg? Exception #"10"
+                    (retrying Exception 10 (throw (Exception. (str (swap! n inc)))))))))
 
-        (testing "logittaa jokaisen uudelleenyritykseen johtaneen poikkeuksen"
-          (reset! log [])
-          (let [n (atom 0)]
-            (try
-              (retrying Exception 3 (throw (Exception. (str (swap! n inc)))))
-              (catch Exception _)))
-          (is (= @log [[:warn "1"] [:warn "2"]])))))))
+          (testing "logittaa jokaisen uudelleenyritykseen johtaneen poikkeuksen"
+            (reset! log [])
+            (let [n (atom 0)]
+              (try
+                (retrying Exception 3 (throw (Exception. (str (swap! n inc)))))
+                (catch Exception _)))
+            (is (= @log [[:warn "1"] [:warn "2"]]))))))))
 
 (deftest some-value-with-not-found-test
   (is (nil? (some-value-with :name "John"

@@ -82,32 +82,37 @@
   (when-let [pp (pre-post muoto)]
     (not (every? vector? (vals pp)))))
 
-(defn get-meta [o]
+(defn get-meta
   "http://stackoverflow.com/questions/12432561/how-to-get-the-metadata-of-clojure-function-arguments"
+  [o]
   (->> *ns* ns-map (filter (fn [[_ v]] (and (var? v) (= o (var-get v))))) first second meta))
 
-(defn defn-without-meta? [muoto kwset]
+(defn defn-without-meta?
   "tarkistaa että muoto ei sisällä määriteltyjä keywordeja, esim. :test-api metatietoa"
+  [muoto kwset]
   (and
     (= 'defn (nth muoto 0))
     (empty? (clojure.set/intersection (set (keys (meta (nth muoto 1)))) kwset))))
 
-(defn ei-audit-logitettava-funktio? [muoto]
+(defn ei-audit-logitettava-funktio?
   "test-api ja integraatioiden käyttämät arkistofunktiot eivät ole auditlokituksen piirissä"
+  [muoto]
   (defn-without-meta? muoto #{:test-api :integration-api}))
 
 (defn public-function? [form]  
   (defn-without-meta? form #{:private}))
   
-(defn sivuvaikutuksellinen-funktio? [muoto]
+(defn sivuvaikutuksellinen-funktio?
   "Jos funktion nimi loppuu huutomerkkiin, tulkitaan että sillä on sivuvaikutuksia."
+  [muoto]
   (and
     (= 'defn (nth muoto 0))
     (let [fn-name (name (nth muoto 1))]
       (.endsWith fn-name "!"))))
 
-(defn audit-log-kutsu-puuttuu? [muoto]
+(defn audit-log-kutsu-puuttuu?
   "tarkistaa puuttuuko audit-log kutsu muodosta jossa sellainen pitäisi olla"
+  [muoto]
   (let [sisaltaa-audit-kutsun? (some #(and (symbol? %)
                                         (= "auditlog" (.getNamespace %)))
                                  (flatten muoto))]
