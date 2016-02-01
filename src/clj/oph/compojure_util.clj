@@ -38,7 +38,6 @@
            (log/error "Käyttöoikeudet eivät riitä. Toiminto estetty.")
            (throw (ex-info "Käyttöoikeudet eivät riitä." {:cause :kayttooikeudet})))))))
 
-
 (defmacro autorisoitu-transaktio
   "Tarkastaa käyttöoikeudet ja hallitsee tietokanta-transaktion"
   [auth-map toiminto konteksti & body]

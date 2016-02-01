@@ -26,10 +26,10 @@
 (defn no-args?
   "Returns true if f is a var of a function with no arguments. False otherwise."
   [f]
-  (cond 
+  (cond
     (function? f)
       (= #{0} (arityt f))
-    (and 
+    (and
       (seq? f)
       (= 'fn* (first f)))
        (empty? (second f))

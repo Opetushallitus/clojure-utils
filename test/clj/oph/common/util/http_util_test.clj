@@ -85,10 +85,8 @@
       (let [data {:foo "Bar"}]
         (is (= (:body (json-response data))
                "{\"foo\":\"Bar\"}"))))
-    
+
     (testing "no-cache json toimii oikein"
        (let [data {:kung :fury}]
          (is (= (get (:headers (json-response-nocache data)) "Cache-control")
                 "max-age=0"))))))
-
-

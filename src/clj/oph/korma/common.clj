@@ -158,7 +158,6 @@
     (sql/insert entity
       (sql/values row))))
 
-
 (defn entity-alias [entity alias]
   (assoc entity :name alias
                 :alias alias))

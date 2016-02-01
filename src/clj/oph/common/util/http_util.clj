@@ -55,8 +55,7 @@
    "Last-Modified" (format-http-date last-modified)
    "Content-Type" "application/json"})
 
-
-; Jos sisällön viimeisintä muokkausaikaa ei ole, käytetään nykyhetkeä  
+; Jos sisällön viimeisintä muokkausaikaa ei ole, käytetään nykyhetkeä
 (defn cachable-json-response
   "Cheshiren avulla REST response, jossa on mukana cache- ja json-headerit"
   ([req vseq]
@@ -72,7 +71,7 @@
   ([req vseq schema]
     (cachable-json-response req (s/validate schema vseq))))
 
-; Jos sisällön viimeisintä muokkausaikaa ei ole, käytetään nykyhetkeä  
+; Jos sisällön viimeisintä muokkausaikaa ei ole, käytetään nykyhetkeä
 (defn cachable-response
   ([req vseq]
    (let [cache-muokattu (get-cache-date req)

@@ -21,7 +21,7 @@
  []
  (let [flyway-taulu "schema_version"
        vialliset-taulut (sql/exec-raw
-                          (str "select table_name from information_schema.tables" 
+                          (str "select table_name from information_schema.tables"
                             " where not exists ("
                             " select * from pg_class left outer join pg_trigger on tgrelid=pg_class.oid"
                             " where tgtype in(7,19) and relname = table_name) "

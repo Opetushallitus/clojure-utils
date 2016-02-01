@@ -59,7 +59,6 @@
                        :when (ehto muoto)]
                    (str polku ": " muoto)))))))
 
-
 (defn pre-post [muoto]
   (when (= 'defn (nth muoto 0))
     (some #(and (map? %)
@@ -99,9 +98,9 @@
   [muoto]
   (defn-without-meta? muoto #{:test-api :integration-api}))
 
-(defn public-function? [form]  
+(defn public-function? [form]
   (defn-without-meta? form #{:private}))
-  
+
 (defn sivuvaikutuksellinen-funktio?
   "Jos funktion nimi loppuu huutomerkkiin, tulkitaan että sillä on sivuvaikutuksia."
   [muoto]

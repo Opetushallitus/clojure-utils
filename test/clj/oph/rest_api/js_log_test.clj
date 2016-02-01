@@ -11,4 +11,3 @@
   (let [long-str (reduce str (map str (range 1 js-log/maxlength)))]
     (is (< js-log/maxlength (count long-str)))
     (is (= js-log/maxlength (count (js-log/sanitize long-str))))))
-    

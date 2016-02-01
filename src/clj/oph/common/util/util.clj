@@ -51,13 +51,6 @@
           {}
           m))
 
-(defn ^:private nil-or-blank?
-  "Returns true if input is nil or a blank string, false otherwise"
-  [v]
-  (if (string? v)
-    (clojure.string/blank? v)
-    (nil? v)))
-
 (defn get-in-list
   "Like get-in, but also inspects each item of a list"
   ([m ks]
