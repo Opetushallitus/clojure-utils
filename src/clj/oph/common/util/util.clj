@@ -177,8 +177,8 @@
 (defn map-values
   "Applies f to each value in m and returns the resulting map"
    [f m]
-  (into {} (for [[k v] m]
-             [k (f v)])))
+  (into (empty m) (for [[k v] m]
+                    [k (f v)])))
 
 (defn retrying* [expected-throwable attempts f]
   {:pre [(isa? expected-throwable Throwable)

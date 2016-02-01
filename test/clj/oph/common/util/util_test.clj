@@ -89,6 +89,13 @@
             2 {:key 2
                :value "b"}}))))
 
+(deftest map-values-test
+  (testing "Suorittaa funktion mapin arvoille ja säilyttää avaimet"
+    (is (= (map-values inc {:a 1, :b 2})
+           {:a 2, :b 3})))
+  (testing "Säilyttää mapin tyypin"
+    (is (sorted? (map-values inc (sorted-map :a 1))))))
+
 (deftest retrying-test
   (testing "Testaa transaktio retry-logiikan toiminnan"
     (let [log (atom [])]
