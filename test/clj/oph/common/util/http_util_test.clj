@@ -14,6 +14,7 @@
 
 (ns oph.common.util.http-util-test
   (:require [clojure.test :refer [deftest testing is are]]
+            [clj-time.core :as time]
             [cheshire.core :as json]
             [oph.common.util.http-util :refer :all]))
 
@@ -90,3 +91,14 @@
        (let [data {:kung :fury}]
          (is (= (get (:headers (json-response-nocache data)) "Cache-control")
                 "max-age=0"))))))
+
+(deftest parse-iso-date-test
+  (testing "parse-iso-date"
+    (testing "parsii täydellisen ISO-päivämäärän Suomen aikavyöhykkeellä"
+      (is (= (parse-iso-date "2016-12-31T23:00:00.000Z") (time/local-date 2017 1 1))))
+    (testing "parsii täydellisen ISO-päivämäärän jossa on paikallinen aikavyöhyke"
+      (is (= (parse-iso-date "2016-12-31T23:00:00.000+02") (time/local-date 2016 12 31))))
+    (testing "parsii ISO-päivämäärän jossa on vain päivämääräosuus"
+      (is (= (parse-iso-date "2016-12-31") (time/local-date 2016 12 31))))
+    (testing "parsii suomalaisen päivämäärän"
+      (is (= (parse-iso-date "31.12.2016") (time/local-date 2016 12 31))))))
