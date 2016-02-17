@@ -49,7 +49,7 @@
       (try-parse-local-date-with-tz "yyyy-MM-dd'T'HH:mm:ssZ" d)
       (try-parse-local-date "yyyy-MM-dd" d)
       (try-parse-local-date "dd.MM.yyyy" d)
-      (throw (IllegalArgumentException. "Virheellinen pvm formaatti")))))
+      (throw (IllegalArgumentException. (str "Virheellinen pvm formaatti: " d))))))
 
 (defn get-cache-headers
   [last-modified]
