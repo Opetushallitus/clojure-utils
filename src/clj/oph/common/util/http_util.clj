@@ -41,10 +41,12 @@
       nil)))
 
 (defn parse-iso-date
+  "Does not support all valid ISO date format presentations: https://en.wikipedia.org/wiki/ISO_8601#Dates"
   [d]
   (when d
     (or
       (try-parse-local-date-with-tz "yyyy-MM-dd'T'HH:mm:ss.SSSZ" d)
+      (try-parse-local-date-with-tz "yyyy-MM-dd'T'HH:mm:ssZ" d)
       (try-parse-local-date "yyyy-MM-dd" d)
       (try-parse-local-date "dd.MM.yyyy" d)
       (throw (IllegalArgumentException. "Virheellinen pvm formaatti")))))

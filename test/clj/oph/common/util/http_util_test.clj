@@ -96,6 +96,8 @@
   (testing "parse-iso-date"
     (testing "parsii täydellisen ISO-päivämäärän Suomen aikavyöhykkeellä"
       (is (= (parse-iso-date "2016-12-31T23:00:00.000Z") (time/local-date 2017 1 1))))
+    (testing "parsii ISO-päivämäärän ilman millisekunteja Suomen aikavyöhykkeellä"
+      (is (= (parse-iso-date "2016-12-31T23:00:00Z") (time/local-date 2017 1 1))))
     (testing "parsii täydellisen ISO-päivämäärän jossa on paikallinen aikavyöhyke"
       (is (= (parse-iso-date "2016-12-31T23:00:00.000+02") (time/local-date 2016 12 31))))
     (testing "parsii ISO-päivämäärän jossa on vain päivämääräosuus"
