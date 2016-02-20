@@ -11,7 +11,7 @@ Travis CI automaattitestit: [![Build Status](https://travis-ci.org/Opetushallitu
 * [Aipal](https://github.com/Opetushallitus/aipal)
 * [Näyttötutkintohaku.fi](https://github.com/Opetushallitus/aituhaku)
 * [osaan.fi](https://github.com/Opetushallitus/osaan.fi)
-* CSC:n [Avop](https://github.com/CSC-IT-Center-for-Science/avop)
+* CSC:n [Arvo](https://github.com/CSC-IT-Center-for-Science/arvo)
 
 # Kun teet päivityksiä
 
