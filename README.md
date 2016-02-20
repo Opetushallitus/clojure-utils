@@ -1,7 +1,9 @@
 Clojure-utils
 =============
 
-Yleiskäyttöistä koodia liittyen Opetushallituksen Clojure-projektien tarpeisiin. 
+Yleiskäyttöistä koodia liittyen Opetushallituksen Clojure-projektien tarpeisiin.
+
+Travis CI automaattitestit: [![Build Status](https://travis-ci.org/Opetushallitus/clojure-utils.svg?branch=master)](https://travis-ci.org/Opetushallitus/clojure-utils)
 
 # Käyttäviä projekteja
 
