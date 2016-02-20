@@ -1,0 +1,9 @@
+sudo: required
+
+language: clojure
+
+before_script:
+  - echo 'Europe/Helsinki' | sudo tee /etc/timezone
+  - sudo dpkg-reconfigure --frontend noninteractive tzdata
+  - export TZ="Europe/Helsinki"
+
