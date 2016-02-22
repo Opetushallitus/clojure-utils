@@ -58,22 +58,6 @@
    "Content-Type" "application/json"})
 
 ; Jos sisällön viimeisintä muokkausaikaa ei ole, käytetään nykyhetkeä
-(defn cachable-json-response
-  "Cheshiren avulla REST response, jossa on mukana cache- ja json-headerit"
-  ([req vseq]
-    (let [cache-muokattu (get-cache-date req)
-          vseq-muokattu (->
-                          (uusin-muokkausaika-tai-nykyhetki vseq [:muutettuaika])
-                          (.withMillisOfSecond 0))]
-      (if (> 0 (compare cache-muokattu vseq-muokattu))
-        {:status 200
-         :body (cheshire/generate-string vseq)
-         :headers (get-cache-headers vseq-muokattu)}
-        {:status 304})))
-  ([req vseq schema]
-    (cachable-json-response req (s/validate schema vseq))))
-
-; Jos sisällön viimeisintä muokkausaikaa ei ole, käytetään nykyhetkeä
 (defn cachable-response
   ([req vseq]
    (let [cache-muokattu (get-cache-date req)
@@ -92,16 +76,6 @@
       {:status 404}
       {:status 200
        :body data})))
-
-(defn json-response
-  ([data]
-    (if (nil? data)
-      {:status 404}
-      {:status 200
-       :body (cheshire/generate-string data)
-       :headers {"Content-Type" "application/json"}}))
-  ([data schema]
-    (json-response (s/validate (s/maybe schema) data))))
 
 (defn korvaa-virheteksti [virhetekstit virhe]
   (let [[virhe & parametrit ] (if (keyword? virhe)
@@ -130,7 +104,7 @@
 
 (defn file-upload-response
   [data]
-  (assoc (json-response data) :headers {"Content-Type" "text/html"}))
+  (assoc (response-or-404 data) :headers {"Content-Type" "text/html"}))
 
 (defn validoi-entity-saannoilla
   [entity saannot]
@@ -161,6 +135,6 @@
   ;; instead.", joten käytetään 404:ää.
   `(if ~ehto (do ~@body) {:status 404}))
 
-(defn json-response-nocache
+(defn response-nocache
   [data]
-  (assoc-in (json-response data) [:headers "Cache-control"] "max-age=0"))
+  (assoc-in (response-or-404 data) [:headers "Cache-control"] "max-age=0"))

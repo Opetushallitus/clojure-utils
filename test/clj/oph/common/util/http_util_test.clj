@@ -68,28 +68,18 @@
         (is (= (-> vastaus :body json/parse-string (get-in ["errors" "foo"]))
                ["Arvon on oltava positiivinen"]))))))
 
-(deftest json-response-test
-  (testing "json-response"
+(deftest response-or-404-test
+  (testing "response-or-404"
     (testing "palauttaa 404-vastauksen nil-syötteellä"
-      (is (= (:status (json-response nil)) 404)))
-
-    (testing "palauttaa content-typen ei-nil-syötteellä"
-      (let [data {:foo "Bar"}]
-        (is (= (:headers (json-response data))
-               {"Content-Type" "application/json"}))))
+      (is (= (:status (response-or-404 nil)) 404)))
 
     (testing "palauttaa 200-vastauksen ei-nil-syötteellä"
       (let [data {:foo "Bar"}]
-        (is (= (:status (json-response data)) 200))))
+        (is (= (:status (response-or-404 data)) 200))))
 
-    (testing "palauttaa vastauksen sarjallisetettuna ei-nil-syötteellä"
-      (let [data {:foo "Bar"}]
-        (is (= (:body (json-response data))
-               "{\"foo\":\"Bar\"}"))))
-
-    (testing "no-cache json toimii oikein"
+    (testing "no-cache toimii oikein"
        (let [data {:kung :fury}]
-         (is (= (get (:headers (json-response-nocache data)) "Cache-control")
+         (is (= (get (:headers (response-nocache data)) "Cache-control")
                 "max-age=0"))))))
 
 (deftest parse-iso-date-test
