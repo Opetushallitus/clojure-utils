@@ -187,6 +187,8 @@
                       (if (= attempts-left 1)
                         "kerran"
                         (str attempts-left " kertaa")))
+            (when (instance? java.sql.BatchUpdateException t)
+              (log/warn (.getNextException t) "getNextException:"))
             (retrying* expected-throwable attempts-left f))
           (throw t))))))
 
