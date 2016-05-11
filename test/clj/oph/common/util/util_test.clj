@@ -197,3 +197,12 @@
       (is (= (max-date p1) p1))
       (is (= (max-date p1 p2) p2))
       (is (= (max-date p2 p3 p1) p3)))))
+
+(deftest min-date-test
+  (testing "min-date palauttaa pienimmän annetuista päivämääristä"
+    (let [p1 (time/local-date 2016 1 1)
+          p2 (time/local-date 2016 1 2)
+          p3 (time/local-date 2016 1 3)]
+      (is (= (min-date p1) p1))
+      (is (= (min-date p1 p2) p1))
+      (is (= (min-date p2 p3 p1) p1)))))

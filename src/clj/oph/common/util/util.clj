@@ -92,6 +92,15 @@
   ([a b & more]
     (reduce max-date (max-date a b) more)))
 
+(defn min-date
+  ([a] a)
+  ([a b]
+    (if (> 0 (compare a b))
+      a
+      b))
+  ([a b & more]
+    (reduce min-date (min-date a b) more)))
+
 (defn paths
   "palauttaa joukon jossa on kaikki polut mapin sisään. Ts. rekursiivinen mapin rakenteen kuvaus"
   ([m]
