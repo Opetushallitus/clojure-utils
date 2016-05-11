@@ -188,3 +188,12 @@
                 (merkitse-voimassaolevat {:kentta [{}]} :kentta voimassaolon-paivitysfunktio)
                 [:kentta]))
             "kenttä on vektori")))))
+
+(deftest max-date-test
+  (testing "max-date palauttaa suurimman annetuista päivämääristä"
+    (let [p1 (time/local-date 2016 1 1)
+          p2 (time/local-date 2016 1 2)
+          p3 (time/local-date 2016 1 3)]
+      (is (= (max-date p1) p1))
+      (is (= (max-date p1 p2) p2))
+      (is (= (max-date p2 p3 p1) p3)))))
