@@ -11,3 +11,9 @@
   (let [long-str (reduce str (map str (range 1 js-log/maxlength)))]
     (is (< js-log/maxlength (count long-str)))
     (is (= js-log/maxlength (count (js-log/sanitize long-str))))))
+
+(deftest test-stacktrace
+  (let [strace ["line 1 at foo.js" "line 2" "line 3"]]
+    (is (= "line 1 at foo.js..line 2..line 3" (js-log/stacktrace->string strace))))
+  (is (= "fo" (js-log/stacktrace->string "fo"))))
+    

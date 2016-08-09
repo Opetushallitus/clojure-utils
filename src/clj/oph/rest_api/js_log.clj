@@ -30,6 +30,11 @@
       (str/replace "\r" "!")
       (.substring 0 ln))))
 
+(defn stacktrace->string [stacktrace]
+  (if (sequential? stacktrace)
+    (apply str (interpose ".." stacktrace))
+    stacktrace))
+      
 (defn logita
   "Tarkoitus on wrapata tämä sopivaan compojure-reittiin"
    [virheenUrl userAgent virheviesti stackTrace cause]
@@ -39,7 +44,7 @@
                 "Virheen url: " (sanitize virheenUrl) rivinvaihto
                 "User agent string: " (sanitize userAgent) rivinvaihto
                 "Virheviesti: " (sanitize virheviesti) rivinvaihto
-                "Stacktrace: " (sanitize stackTrace) rivinvaihto
+                "Stacktrace: " (sanitize (stacktrace->string stackTrace)) rivinvaihto
                 "Aiheuttaja: " (sanitize cause) rivinvaihto
                 "------------------------")))
   {:status 200})
