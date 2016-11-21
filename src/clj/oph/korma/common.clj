@@ -65,7 +65,7 @@
                         m))
 
 
-(defn ^:private to-hki-local-date
+(defn to-hki-local-date
   "Coerce to Finnish local date"
   [date]
   (when-let [dt (time-coerce/to-date-time date)]
