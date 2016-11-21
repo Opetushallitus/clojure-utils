@@ -15,7 +15,8 @@
 (ns oph.korma.common
   (:import java.sql.Date
            com.jolbox.bonecp.BoneCPDataSource
-           org.joda.time.LocalDate)
+           org.joda.time.LocalDate
+           org.joda.time.DateTimeZone)
   (:require  korma.db
              [korma.core :as sql]
              [korma.sql.engine :as eng]
@@ -63,6 +64,14 @@
                         time-coerce/from-sql-time
                         m))
 
+
+(defn ^:private to-hki-local-date
+  "Coerce to Finnish local date"
+  [date]
+  (when-let [dt (time-coerce/to-date-time date)]
+    (time-coerce/to-local-date (time/to-time-zone dt (DateTimeZone/forID "Europe/Helsinki")))))
+
+; This should be replaced with the hki locale version, this relies on the server env settings.
 (defn ^:private to-local-date-default-tz
   [date]
   (let [dt (time-coerce/to-date-time date)]
