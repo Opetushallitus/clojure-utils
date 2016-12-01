@@ -206,3 +206,21 @@
       (is (= (min-date p1) p1))
       (is (= (min-date p1 p2) p1))
       (is (= (min-date p2 p3 p1) p1)))))
+
+(deftest erottele-lista-test
+  (let [coll [{:id 1, :nimi "Eka", :sub-id 1, :sub-nimi "sub-eka"}
+              {:id 1, :nimi "Eka", :sub-id 2, :sub-nimi "sub-toka"}
+              {:id 2, :nimi "Toka", :sub-id 3, :sub-nimi "sub-kolmas"}
+              {:id 2, :nimi "Toka", :sub-id 4, :sub-nimi "sub-neljas"}]]
+       (is (= [{:id 1, :nimi "Eka", :sub [{:sub-id 1, :sub-nimi "sub-eka"} {:sub-id 2, :sub-nimi "sub-toka"}]}
+               {:id 2, :nimi "Toka", :sub [{:sub-id 3, :sub-nimi "sub-kolmas"} {:sub-id 4, :sub-nimi "sub-neljas"}]}]
+              (erottele-lista :sub [:sub-id :sub-nimi] coll))))
+  (let [coll [{:id1 1, :id2 1, :sub-id 1, :sub-nimi "sub-eka"}
+              {:id1 1, :id2 2, :sub-id 2, :sub-nimi "sub-toka"}
+              {:id1 2, :id2 1, :sub-id 3, :sub-nimi "sub-kolmas"}
+              {:id1 2, :id2 2, :sub-id 4, :sub-nimi "sub-neljas"}]]
+       (is (= [{:id1 1, :id2 1, :sub [{:sub-id 1, :sub-nimi "sub-eka"}]}
+               {:id1 1, :id2 2, :sub [{:sub-id 2, :sub-nimi "sub-toka"}]}
+               {:id1 2, :id2 1, :sub [{:sub-id 3, :sub-nimi "sub-kolmas"}]}
+               {:id1 2, :id2 2, :sub [{:sub-id 4, :sub-nimi "sub-neljas"}]}]
+              (erottele-lista :sub [:sub-id :sub-nimi] coll)))))
