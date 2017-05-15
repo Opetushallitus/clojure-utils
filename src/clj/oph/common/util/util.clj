@@ -276,17 +276,19 @@
 
 (defn diff-maps
   "Palauttaa kahden mapin erot muodossa {avain [uusi-arvo vanha-arvo]} tai avaimen arvona nil jos muutoksia ei ole."
-  [old-map new-map]
+  [new-map old-map]
   (into {} (for [k (union (set (keys old-map))
                           (set (keys new-map)))
                 :let [old-v (get old-map k)
                       new-v (get new-map k)]]
              [k (when (not= old-v new-v)
-                  [old-v new-v])])))
+                  [new-v old-v])])))
 
-(def muutos
+(defn muutos
   "Palauttaa kahden mapin eroavaisuudet"
-  (comp remove-nil-vals diff-maps))
+  [old-map new-map]
+  (into {} (for [[k [new-v old-v]] (remove-nil-vals (diff-maps new-map old-map))]
+             [k [old-v new-v]])))
 
 (defn erottele-lista
   "Ottaa denormalisoidun listan, subentitylle halutun avaimen ja listan subentityn kentistä.

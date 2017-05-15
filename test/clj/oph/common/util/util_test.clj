@@ -69,11 +69,11 @@
         new {:key2 2
              :key3 4
              :key4 4}]
-     (is (= (diff-maps old new)
-            {:key1 [1 nil]
+     (is (= (diff-maps new old)
+            {:key1 [nil 1]
              :key2 nil
-             :key3 [3 4]
-             :key4 [nil 4]}))))
+             :key3 [4 3]
+             :key4 [4 nil]}))))
 
 (deftest muutos-test
   (let [old {:key1 1
