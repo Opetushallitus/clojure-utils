@@ -118,16 +118,6 @@
   [ymd]
   (time-format/parse-local-date (time-format/formatters :year-month-day) ymd))
 
-(defn diff-maps
-  "Palauttaa kahden mapin erot muodossa {avain [uusi-arvo vanha-arvo]} tai nil jos muutoksia ei ole"
-  [new-map old-map]
-  (into {} (for [k (union (set (keys new-map))
-                          (set (keys old-map)))
-                :let [new-v (get new-map k)
-                      old-v (get old-map k)]]
-             [k (when (not= new-v old-v)
-                  [new-v old-v])])))
-
 (defn get-json-from-url
   ([url]
     (get-json-from-url url {}))
@@ -284,12 +274,19 @@
 (defn remove-nil-vals [m]
   (into {} (remove (comp nil? val) m)))
 
-(defn muutos
+(defn diff-maps
+  "Palauttaa kahden mapin erot muodossa {avain [uusi-arvo vanha-arvo]} tai avaimen arvona nil jos muutoksia ei ole."
+  [old-map new-map]
+  (into {} (for [k (union (set (keys old-map))
+                          (set (keys new-map)))
+                :let [old-v (get old-map k)
+                      new-v (get new-map k)]]
+             [k (when (not= old-v new-v)
+                  [old-v new-v])])))
+
+(def muutos
   "Palauttaa kahden mapin eroavaisuudet"
-  [vanha uusi]
-  (into {} (for [k (clojure.set/union (set (keys vanha)) (set (keys uusi)))
-                 :when (not= (get vanha k) (get uusi k))]
-             [k [(get vanha k) (get uusi k)]])))
+  (comp remove-nil-vals diff-maps))
 
 (defn erottele-lista
   "Ottaa denormalisoidun listan, subentitylle halutun avaimen ja listan subentityn kentistä.
