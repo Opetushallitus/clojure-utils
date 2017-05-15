@@ -72,7 +72,7 @@
      (is (= (diff-maps old new)
             {:key1 [1 nil]
              :key2 nil
-             :key3 [4 3]
+             :key3 [3 4]
              :key4 [nil 4]}))))
 
 (deftest muutos-test
@@ -84,7 +84,7 @@
              :key4 4}]
      (is (= (muutos old new)
             {:key1 [1 nil]
-             :key3 [4 3]
+             :key3 [3 4]
              :key4 [nil 4]}))))
 
 (deftest map-by-test
