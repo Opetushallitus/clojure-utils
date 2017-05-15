@@ -21,13 +21,12 @@
 (deftest file-download-response-test
   (testing "file-download-response"
     (testing "Palauttaa datan unicode-merkkijonona, jos koodausta ei ole määritelty"
-      (is (= "åäö" (-> (file-download-response (.getBytes "åäö") "foo.txt" "text/plain")
+      (is (= "åäö" (-> (file-download-response (.getBytes "åäö" "UTF-8") "foo.txt" "text/plain")
                      :body
                      slurp))))
 
     (testing "Palauttaa datan määritellyssä koodauksessa"
-      (is (= "åäö" (-> (file-download-response "åäö" "foo.txt" "text/plain"
-                                                   {:charset "CP1252"})
+      (is (= "åäö" (-> (file-download-response "åäö" "foo.txt" "text/plain" {:charset "CP1252"})
                      :body
                      (slurp :encoding "CP1252")))))))
 
