@@ -55,7 +55,7 @@
   [last-modified]
   {"Cache-Control" "max-age=0, must-revalidate, proxy-revalidate"
    "Last-Modified" (format-http-date last-modified)
-   "Content-Type" "application/json"})
+   "Content-Type" "application/json; charset=utf-8"})
 
 ; Jos sisällön viimeisintä muokkausaikaa ei ole, käytetään nykyhetkeä
 (defn cachable-response
@@ -113,7 +113,7 @@
 (defn luo-validoinnin-virhevastaus
   [virheet virhetekstit]
   {:status 400
-   :headers {"Content-Type" "application/json"}
+   :headers {"Content-Type" "application/json; charset=utf-8"}
    :body (cheshire/generate-string
            {:errors (korvaa-virhetekstit virheet virhetekstit)})})
 

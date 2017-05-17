@@ -56,7 +56,7 @@
                               [:bar #(zero? (mod % 2)) :oltava-parillinen]]
                              {}
                       :tulos)]
-        (is (= (get-in vastaus [:headers "Content-Type"]) "application/json"))
+        (is (= (get-in vastaus [:headers "Content-Type"]) "application/json; charset=utf-8"))
         (is (= (json/parse-string (:body vastaus))
                {"errors" {"bar" ["oltava-positiivinen" "oltava-parillinen"]}}))))
 
