@@ -14,10 +14,9 @@
 
 (defproject clojure-utils "0.1.0-SNAPSHOT"
   :description "OPH Clojure-utils"
-  :dependencies [[org.clojure/clojure "1.5.1"]
+  :dependencies [[org.clojure/clojure "1.6.0"]
                  [ring/ring-core "1.2.1"]
                  [org.clojure/tools.logging "0.2.6"]
-
                  [ch.qos.logback/logback-classic "1.0.13"]
                  [cheshire "5.4.0"]
                  [clj-http "1.0.1"]
