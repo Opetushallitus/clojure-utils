@@ -77,16 +77,6 @@
       {:status 200
        :body data})))
 
-(defn korvaa-virheteksti [virhetekstit virhe]
-  (let [[virhe & parametrit ] (if (keyword? virhe)
-                                [virhe]
-                                virhe)]
-    (apply format (virhetekstit virhe (name virhe)) parametrit)))
-
-(defn korvaa-virhetekstit [valip-errors virhetekstit]
-  (into {} (for [[kentta virheet] valip-errors]
-             [kentta (map (partial korvaa-virheteksti virhetekstit) virheet)])))
-
 (defn file-download-response
   ([data filename content-type]
     (file-download-response data filename content-type {}))
@@ -105,6 +95,20 @@
 (defn file-upload-response
   [data]
   (assoc (response-or-404 data) :headers {"Content-Type" "text/html"}))
+
+(defn response-nocache
+  [data]
+  (assoc-in (response-or-404 data) [:headers "Cache-control"] "max-age=0"))
+
+(defn korvaa-virheteksti [virhetekstit virhe]
+  (let [[virhe & parametrit ] (if (keyword? virhe)
+                                [virhe]
+                                virhe)]
+    (apply format (virhetekstit virhe (name virhe)) parametrit)))
+
+(defn korvaa-virhetekstit [valip-errors virhetekstit]
+  (into {} (for [[kentta virheet] valip-errors]
+             [kentta (map (partial korvaa-virheteksti virhetekstit) virheet)])))
 
 (defn validoi-entity-saannoilla
   [entity saannot]
@@ -134,7 +138,3 @@
   ;; available to the client, the status code 404 (Not Found) can be used
   ;; instead.", joten käytetään 404:ää.
   `(if ~ehto (do ~@body) {:status 404}))
-
-(defn response-nocache
-  [data]
-  (assoc-in (response-or-404 data) [:headers "Cache-control"] "max-age=0"))
