@@ -78,8 +78,16 @@
 
     (testing "no-cache toimii oikein"
        (let [data {:kung :fury}]
-         (is (= (get (:headers (response-nocache data)) "Cache-control")
-                "max-age=0"))))))
+         (is (= (get-in (response-nocache data) [:headers "Cache-control"])
+                "max-age=0"))))
+
+    (testing "no-cache-strict toimii oikein"
+       (let [data {:es :cape}
+             response (response-nocache-strict data)]
+         (is (= (get-in response [:headers "Cache-control"])
+                "max-age=0, private, no-cache, no-store, must-revalidate"))
+         (is (= (get-in response [:headers "Pragma"])
+                "no-cache"))))))
 
 (deftest parse-iso-date-test
   (testing "parse-iso-date"

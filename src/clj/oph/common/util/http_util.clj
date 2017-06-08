@@ -94,11 +94,20 @@
 
 (defn file-upload-response
   [data]
-  (assoc (response-or-404 data) :headers {"Content-Type" "text/html"}))
+  (-> (response-or-404 data)
+    (assoc :headers {"Content-Type" "text/html"})))
 
 (defn response-nocache
   [data]
-  (assoc-in (response-or-404 data) [:headers "Cache-control"] "max-age=0"))
+  (-> (response-or-404 data)
+    (assoc-in [:headers "Cache-control"] "max-age=0")))
+
+;; https://stackoverflow.com/questions/49547/how-to-control-web-page-caching-across-all-browsers
+(defn response-nocache-strict
+  [data]
+  (-> (response-nocache data)
+    (update-in [:headers "Cache-control"] str ", private, no-cache, no-store, must-revalidate")
+    (assoc-in [:headers "Pragma"] "no-cache")))
 
 (defn korvaa-virheteksti [virhetekstit virhe]
   (let [[virhe & parametrit ] (if (keyword? virhe)
