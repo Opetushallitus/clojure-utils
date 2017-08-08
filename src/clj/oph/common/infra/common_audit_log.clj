@@ -82,7 +82,7 @@
           user-session ""   ;; TODO: Mitä tähän?
           ip           ""   ;; TODO: Mitä tähän?
           ]
-      (ring-handler req)
+      (ring-handler request)
       )
 
     ))
