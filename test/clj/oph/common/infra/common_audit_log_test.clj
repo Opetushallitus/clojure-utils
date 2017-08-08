@@ -14,37 +14,37 @@
 (deftest auditlogitus-test
 
   (testing "environment metaa ei ole annettu"
-;    (is (thrown? AssertionError (log {})))
-    (is (thrown-with-msg? clojure.lang.ExceptionInfo #"Value does not match schema" (log {})))
+;    (is (thrown? AssertionError (->audit-log-entry {})))
+    (is (thrown-with-msg? clojure.lang.ExceptionInfo #"Value does not match schema" (->audit-log-entry {})))
     )
 
   (testing "environment meta on epävalidi"
-    (reset! environment-meta {:service-name "aitu"})
-    (is (thrown-with-msg? clojure.lang.ExceptionInfo #"Value does not match schema" (log {})))
+    (konfiguroi-common-audit-lokitus {:service-name "aitu"})
+    (is (thrown-with-msg? clojure.lang.ExceptionInfo #"Value does not match schema" (->audit-log-entry {})))
     )
 
   (testing "meta annettu mutta logisisältö puuttuu"
-    (reset! environment-meta validi-meta)
-    (is (thrown-with-msg? clojure.lang.ExceptionInfo #"Value does not match schema" (log {})))
+    (konfiguroi-common-audit-lokitus validi-meta)
+    (is (thrown-with-msg? clojure.lang.ExceptionInfo #"Value does not match schema" (->audit-log-entry {})))
     )
 
   (testing "kaikki kentät annettu"
-    (reset! environment-meta validi-meta)
-    (let [resp (log {:operation :paivitys
-                     :user {:oid        "henkiloOid"
-                            :ip         "127.0.0.1"
-                            :session    "124uih23u124"
-                            :user-agent "Apache-HttpClient/4.5.2(Java/1.8.0_121)"}
-                     :resource "järjestämissopimus"
-                     :resourceOid "sopimusId"
-                     :id "id"
-                     :delta [{:op :paivitys
-                              :path "alkupvm"
-                              :value (time/local-date 2009 8 1)}
-                             {:op :paivitys
-                              :path "loppupvm"
-                              :value (time/local-date 2009 7 31)}]
-                     :message "Tämä on viesti."})
+    (konfiguroi-common-audit-lokitus validi-meta)
+    (let [resp (->audit-log-entry {:operation :paivitys
+                                   :user {:oid        "henkiloOid"
+                                          :ip         "127.0.0.1"
+                                          :session    "124uih23u124"
+                                          :user-agent "Apache-HttpClient/4.5.2(Java/1.8.0_121)"}
+                                   :resource "järjestämissopimus"
+                                   :resourceOid "sopimusId"
+                                   :id "id"
+                                   :delta [{:op :paivitys
+                                            :path "alkupvm"
+                                            :value (time/local-date 2009 8 1)}
+                                           {:op :paivitys
+                                            :path "loppupvm"
+                                            :value (time/local-date 2009 7 31)}]
+                                   :message "Tämä on viesti."})
           ]
       ;; Ohitetaan muuttuvan "timestamp"-arvon tarkastelu.
       (is (and
