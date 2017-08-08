@@ -41,6 +41,8 @@
                                                   :value s/Any}]
                         (s/optional-key :message) s/Str})
 
+(def ^:dynamic *req-meta*)
+
 (def ^:private version  1)
 (def ^:private type-log "log")  ;; Meillä ei tueta "alive"-logiviestejä
 (def ^:private log-seq  (atom (bigint 0)))
@@ -63,6 +65,27 @@
 (json-gen/add-encoder org.joda.time.LocalDate
                       (fn [c json-generator]
                         (.writeString json-generator (.toString c "dd.MM.yyyy"))))
+
+(defn req-metadata-saver-wrapper
+  "Tallentaa requestista tietoa logitusta varten"
+  [ring-handler]
+  (fn [request]
+    ;;
+    ;; TODO
+    ;;
+    (println "\n request:")
+    (>pprint request)
+    (println "\n")
+
+    (let [user-oid     (get (:headers request) "oid")  ;; TODO: Onko tämä userin oid?
+          user-agent   (get (:headers request) "user-agent")
+          user-session ""   ;; TODO: Mitä tähän?
+          ip           ""   ;; TODO: Mitä tähän?
+          ]
+      (ring-handler req)
+      )
+
+    ))
 
 (defn konfiguroi-common-audit-lokitus [metadata]
   (log/info "Alustetaan common audit logituksen metadata arvoihin:" metadata)
