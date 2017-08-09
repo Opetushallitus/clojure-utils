@@ -32,28 +32,33 @@
     (konfiguroi-common-audit-lokitus validi-meta)
     (let [resp (->audit-log-entry {:operation :paivitys
                                    :user {:oid        "henkiloOid"
-                                          :ip         "127.0.0.1"
-                                          :session    "124uih23u124"
-                                          :user-agent "Apache-HttpClient/4.5.2(Java/1.8.0_121)"}
+;                                          :ip         "127.0.0.1"
+;                                          :session    "124uih23u124"
+;                                          :user-agent "Apache-HttpClient/4.5.2(Java/1.8.0_121)"
+                                          }
                                    :resource "järjestämissopimus"
-                                   :resourceOid "sopimusId"
-                                   :id "id"
-                                   :delta [{:op :paivitys
+                                   :resourceOid "sopimusOid"
+                                   :id "paa-avain"
+                                   :delta [{:op "päivitys"
                                             :path "alkupvm"
                                             :value (time/local-date 2009 8 1)}
-                                           {:op :paivitys
+                                           {:op "päivitys"
                                             :path "loppupvm"
                                             :value (time/local-date 2009 7 31)}]
                                    :message "Tämä on viesti."})
           ]
-      ;; Ohitetaan muuttuvan "timestamp"-arvon tarkastelu.
+      ;; Ohitetaan muuttuvan "timestamp"-arvon tarkastelu. Myös userin ip:tä, sessiota ja user-agenttia on tässä hankala testata, sillä ne otetaan livenä ring-requestista.
       (is (and
             (.contains resp
-              "\"operation\":\"päivitys\",\"type\":\"log\",\"hostname\":\"host\",\"applicationType\":\"virkailija\",\"delta\":[{\"op\":\"paivitys\",\"path\":\"alkupvm\",\"value\":\"01.08.2009\"},{\"op\":\"paivitys\",\"path\":\"loppupvm\",\"value\":\"31.07.2009\"}],\"logSeq\":1")
+              "\"operation\":\"päivitys\",\"type\":\"log\",\"hostname\":\"host\",\"applicationType\":\"virkailija\"")
             (.contains resp
-              "\"target\":{\"järjestämissopimus\":\"sopimusId\",\"id\":\"id\"},\"serviceName\":\"aitu\",\"version\":1")
+              "\"delta\":[{\"op\":\"päivitys\",\"path\":\"alkupvm\",\"value\":\"01.08.2009\"},{\"op\":\"päivitys\",\"path\":\"loppupvm\",\"value\":\"31.07.2009\"}],\"logSeq\":1")
             (.contains resp
-              "\"user\":{\"oid\":\"henkiloOid\",\"ip\":\"127.0.0.1\",\"session\":\"124uih23u124\",\"userAgent\":\"Apache-HttpClient/4.5.2(Java/1.8.0_121)\"},\"message\":\"Tämä on viesti.\"")
+              "\"target\":{\"järjestämissopimus\":\"sopimusOid\",\"id\":\"paa-avain\"},\"serviceName\":\"aitu\",\"version\":1")
+            (.contains resp
+              "\"user\":{\"oid\":\"henkiloOid\"")
+            (.contains resp
+              "\"message\":\"Tämä on viesti.\"")
             (.contains resp (json/generate-string boot-time))))
       ))
   )

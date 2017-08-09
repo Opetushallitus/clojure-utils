@@ -21,9 +21,7 @@
     [cheshire.generate :as json-gen]
     [clj-time.core :as time]
     [clj-time.local :as time-local]
-    )
-  (:import [java.net.URL])  ;; TODO: Onko käytössä?
-  )
+    ))
 
 (s/defschema Env-meta {:boot-time        s/Any   ;; TODO: Tarkasta jotenkin datetime
                        :hostname         s/Str
@@ -32,13 +30,14 @@
 
 (s/defschema Logientry {:operation (s/enum :kirjautuminen :lisays :paivitys :poisto)
                         :user {:oid        s/Str
-                               :ip         s/Str
-                               :session    s/Str
-                               :user-agent s/Str}
+;                               :ip         s/Str   ;; Tämä otetaan ring-wrapperilla requestista
+;                               :session    s/Str   ;; Tämä otetaan ring-wrapperilla requestista
+;                               :user-agent s/Str   ;; Tämä otetaan ring-wrapperilla requestista
+                               }
                         :resource s/Str              ;; taulun nimi
                         :resourceOid (s/maybe s/Str) ;; mahdollinen objektin id
                         :id s/Str                    ;; taulun pääavain
-                        (s/optional-key :delta) [{:op (s/enum :lisays :paivitys :poisto)
+                        (s/optional-key :delta) [{:op (s/enum "lisäys" "päivitys" "poisto")
                                                   :path s/Str
                                                   :value s/Any}]
                         (s/optional-key :message) s/Str})
@@ -68,54 +67,16 @@
                       (fn [c json-generator]
                         (.writeString json-generator (.toString c "dd.MM.yyyy"))))
 
-#_{:cookies {"_pk_id.8.c997" {:value "f3d739b61c765b2d.1494944473.1.1494944473.1494944473."},
-           "XSRF-TOKEN"    {:value "60406fd7-0f54-1d40-5f62-22dbc2a5de7d"},
-           "ring-session"  {:value "1903bd73-958a-4b88-8a52-e4f396d893c7"}},
- :remote-addr "192.168.50.1",
- :params {},
- :headers {"host" "192.168.50.1:8080",
-           "user-agent" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.90 Safari/537.36",
-           "cookie" "_pk_id.8.c997=f3d739b61c765b2d.1494944473.1.1494944473.1494944473.; XSRF-TOKEN=60406fd7-0f54-1d40-5f62-22dbc2a5de7d; ring-session=1903bd73-958a-4b88-8a52-e4f396d893c7",
-           "uid" "T-1001",
-           "referer" "http://192.168.50.1:8080/fi/",
-           "connection" "keep-alive",
-           "accept" "image/webp,image/apng,image/*,*/*;q=0.8",
-           "accept-language" "en-US,en;q=0.8,fi;q=0.6",
-           "accept-encoding" "gzip, deflate"},
- :async-channel #<AsyncChannel /192.168.50.1:8080<->/192.168.50.1:53058>,
- :server-port 8080,
- :content-length 0,
- :websocket? false,
- :session/key nil,
- :content-type nil,
- :character-encoding "utf8",
- :uri "/favicon.ico",
- :server-name "192.168.50.1",
- :query-string nil,
- :body nil,
- :multipart-params {},
- :scheme :http,
- :request-method :get,
- :session {}}
 
 (defn req-metadata-saver-wrapper
   "Tallentaa requestista tietoa logitusta varten"
   [ring-handler]
   (fn [request]
-    (binding [*req-meta* {
-;                          :hostname   (:server-name request) ;; TODO: Saataisiinko :hostname tällä, sen sijaan että se kaivetaan palvelin.clj:ssä?
-                          :user-oid     (get (:headers request) "uid" #_"oid")  ;; TODO: Onko tämä userin oid?
-                          :user-agent   (get (:headers request) "user-agent")
-                          :user-session (get (:cookies request) "ring-session")   ;; TODO: Onko ok?
-                          ;; Speksi sanoo: "Edustapalvelimen asettaman X-Forwarded-For-otsakkeen perusteella"
-                          ;; TODO: Mitä tähän?  :remote-addr, :server-name, (:headers->host), (:headers->referer)?
-                          :user-ip      (let [referer (get (:headers request) "referer")]
-                                          (-> asetukset referer java.net.URL. .getHost))
-                          }
-              ]
-      (ring-handler request)
-      )
-    ))
+
+    (binding [*req-meta* {:user-agent   (get (:headers request) "user-agent")
+                          :user-session (get-in request [:cookies "ring-session" :value])   ;; TODO: Tuleeko tähän ring-sessio vai jokin muu?
+                          :user-ip      (or (get (:headers request) "X-Forwarded-For") (:remote-addr request))}]
+      (ring-handler request))))
 
 (defn konfiguroi-common-audit-lokitus [metadata]
   (log/info "Alustetaan common audit logituksen metadata arvoihin:" metadata)
@@ -123,6 +84,7 @@
 
 (defn ->audit-log-entry [log-contents]
 
+  ;; TODO: *req-metan* validointi?
   ;; pidä nämä alussa
   (s/validate Env-meta  @environment-meta)
   (s/validate Logientry log-contents)
@@ -138,10 +100,10 @@
                                :serviceName     (:service-name @environment-meta)
                                :applicationType (:application-type @environment-meta)
                                :operation       (get operaatiot (:operation log-contents))
-                               :user            {:oid       (:user-oid *req-meta*) #_(-> log-contents :user :oid)
-                                                 :ip        (:user-ip *req-meta*) #_(-> log-contents :user :ip)
-                                                 :session   (:user-session *req-meta*) #_(-> log-contents :user :session)
-                                                 :userAgent (:user-agent *req-meta*) #_(-> log-contents :user :user-agent)}
+                               :user            {:oid       (-> log-contents :user :oid)
+                                                 :ip        (:user-ip *req-meta*)
+                                                 :session   (:user-session *req-meta*)
+                                                 :userAgent (:user-agent *req-meta*)}
                                }
                               (when (:delta log-contents)
                                 {:delta (:delta log-contents)})
