@@ -34,9 +34,9 @@
 ;                               :session    s/Str   ;; Tämä otetaan ring-wrapperilla requestista
 ;                               :user-agent s/Str   ;; Tämä otetaan ring-wrapperilla requestista
                                }
-                        :resource s/Str              ;; taulun nimi
+                        :resource    s/Str           ;; taulun nimi
                         :resourceOid (s/maybe s/Str) ;; mahdollinen objektin id
-                        :id s/Str                    ;; taulun pääavain
+                        :id          (s/maybe s/Str) ;; taulun pääavain
                         (s/optional-key :delta) [{:op (s/enum "lisäys" "päivitys" "poisto")
                                                   :path s/Str
                                                   :value s/Any}]
