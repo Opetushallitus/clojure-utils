@@ -23,17 +23,18 @@
     [clj-time.local :as time-local]
     ))
 
+;; Nämä otetaan ring-wrapperilla requestista
+(s/defschema Request-meta {:ip         s/Str
+                           :session    s/Str
+                           :user-agent s/Str})
+
 (s/defschema Env-meta {:boot-time        s/Any   ;; TODO: Tarkasta jotenkin datetime
                        :hostname         s/Str
                        :service-name     s/Str
                        :application-type (s/enum "oppija" "virkailija")})
 
 (s/defschema Logientry {:operation (s/enum :kirjautuminen :lisays :paivitys :poisto)
-                        :user {:oid        s/Str
-;                               :ip         s/Str   ;; Tämä otetaan ring-wrapperilla requestista
-;                               :session    s/Str   ;; Tämä otetaan ring-wrapperilla requestista
-;                               :user-agent s/Str   ;; Tämä otetaan ring-wrapperilla requestista
-                               }
+                        :user {:oid  s/Str}
                         :resource    s/Str           ;; taulun nimi
                         :resourceOid (s/maybe s/Str) ;; mahdollinen objektin id
                         :id          (s/maybe s/Str) ;; taulun pääavain
@@ -42,7 +43,7 @@
                                                   :value s/Any}]
                         (s/optional-key :message) s/Str})
 
-(def ^:dynamic *req-meta*)
+(def ^:dynamic *request-meta*)
 
 (def ^:private version  1)
 (def ^:private type-log "log")  ;; Meillä ei tueta "alive"-logiviestejä
@@ -67,25 +68,14 @@
                       (fn [c json-generator]
                         (.writeString json-generator (.toString c "dd.MM.yyyy"))))
 
-
-(defn req-metadata-saver-wrapper
-  "Tallentaa requestista tietoa logitusta varten"
-  [ring-handler]
-  (fn [request]
-
-    (binding [*req-meta* {:user-agent   (get (:headers request) "user-agent")
-                          :user-session (get-in request [:cookies "ring-session" :value])   ;; TODO: Tuleeko tähän ring-sessio vai jokin muu?
-                          :user-ip      (or (get (:headers request) "X-Forwarded-For") (:remote-addr request))}]
-      (ring-handler request))))
-
 (defn konfiguroi-common-audit-lokitus [metadata]
   (log/info "Alustetaan common audit logituksen metadata arvoihin:" metadata)
   (reset! environment-meta metadata))
 
 (defn ->audit-log-entry [log-contents]
 
-  ;; TODO: *req-metan* validointi?
   ;; pidä nämä alussa
+  (s/validate Request-meta *request-meta*)
   (s/validate Env-meta  @environment-meta)
   (s/validate Logientry log-contents)
 
@@ -101,9 +91,9 @@
                                :applicationType (:application-type @environment-meta)
                                :operation       (get operaatiot (:operation log-contents))
                                :user            {:oid       (-> log-contents :user :oid)
-                                                 :ip        (:user-ip *req-meta*)
-                                                 :session   (:user-session *req-meta*)
-                                                 :userAgent (:user-agent *req-meta*)}
+                                                 :ip        (:ip *request-meta*)
+                                                 :session   (:session *request-meta*)
+                                                 :userAgent (:user-agent *request-meta*)}
                                }
                               (when (:delta log-contents)
                                 {:delta (:delta log-contents)})
@@ -114,3 +104,11 @@
                                 {:message (:message log-contents)})
                               )))
 
+(defn req-metadata-saver-wrapper
+  "Tallentaa requestista tietoa logitusta varten"
+  [ring-handler]
+  (fn [request]
+    (binding [*request-meta* {:user-agent (get (:headers request) "user-agent")
+                              :session    (get-in request [:cookies "ring-session" :value])
+                              :ip         (or (get (:headers request) "X-Forwarded-For") (:remote-addr request))}]
+      (ring-handler request))))
