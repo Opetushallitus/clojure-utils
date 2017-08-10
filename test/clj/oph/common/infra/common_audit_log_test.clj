@@ -5,7 +5,7 @@
             [clj-time.local :as time-local]
             [oph.common.infra.common-audit-log :refer :all]))
 
-(def ^:private boot-time (time-local/local-now))   ;; (time/local-date-time 1980 9 20 1 2 3 123)
+(def ^:private boot-time (time/local-date-time 1980 9 20 1 2 3 123))   ; (time-local/local-now)
 (def test-environment-meta {:boot-time        boot-time
                             :hostname         "host"
                             :service-name     "aitu"
