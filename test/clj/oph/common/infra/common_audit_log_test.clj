@@ -6,10 +6,13 @@
             [oph.common.infra.common-audit-log :refer :all]))
 
 (def ^:private boot-time (time-local/local-now))   ;; (time/local-date-time 1980 9 20 1 2 3 123)
-(def ^:private validi-meta {:boot-time        boot-time
+(def test-environment-meta {:boot-time        boot-time
                             :hostname         "host"
                             :service-name     "aitu"
                             :application-type "virkailija"})
+(def test-request-meta {:user-agent "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.90 Safari/537.36"
+                        :session    "955d43a3-c02d-4ab8-a61f-141f29c44a84"
+                        :ip         "192.168.50.1"})
 
 (deftest auditlogitus-test
 
@@ -24,15 +27,13 @@
     )
 
   (testing "meta annettu mutta logisisältö puuttuu"
-    (konfiguroi-common-audit-lokitus validi-meta)
+    (konfiguroi-common-audit-lokitus test-environment-meta)
     (is (thrown-with-msg? clojure.lang.ExceptionInfo #"Value does not match schema" (->audit-log-entry {})))
     )
 
   (testing "kaikki kentät annettu"
-    (binding [*request-meta* {:user-agent "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.90 Safari/537.36"
-                              :session    "955d43a3-c02d-4ab8-a61f-141f29c44a84"
-                              :ip         "192.168.50.1"}]
-      (konfiguroi-common-audit-lokitus validi-meta)
+    (binding [*request-meta* test-request-meta]
+      (konfiguroi-common-audit-lokitus test-environment-meta)
       (let [resp (->audit-log-entry {:operation   :paivitys
                                      :user {:oid  "henkiloOid"}
                                      :resource    "järjestämissopimus"
