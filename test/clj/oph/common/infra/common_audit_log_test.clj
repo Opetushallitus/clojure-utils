@@ -47,12 +47,12 @@
                                                     :value (time/local-date 2009 7 31)}]
                                      :message     "Tämä on viesti."})
             ]
-        ;; Ohitetaan muuttuvan "timestamp"-arvon tarkastelu.
+        ;; Ohitetaan muuttuvan "timestamp"-arvon tarkastelu ja logseq arvon juokseva numerointi
         (is (and
               (.contains resp
                 "\"operation\":\"päivitys\",\"type\":\"log\",\"hostname\":\"host\",\"applicationType\":\"virkailija\"")
               (.contains resp
-                "\"delta\":[{\"op\":\"päivitys\",\"path\":\"alkupvm\",\"value\":\"01.08.2009\"},{\"op\":\"päivitys\",\"path\":\"loppupvm\",\"value\":\"31.07.2009\"}],\"logSeq\":1")
+                "\"delta\":[{\"op\":\"päivitys\",\"path\":\"alkupvm\",\"value\":\"01.08.2009\"},{\"op\":\"päivitys\",\"path\":\"loppupvm\",\"value\":\"31.07.2009\"}]")
               (.contains resp
                 "\"target\":{\"järjestämissopimus\":\"sopimusOid\",\"id\":\"paa-avain\"},\"serviceName\":\"aitu\",\"version\":1")
               (.contains resp

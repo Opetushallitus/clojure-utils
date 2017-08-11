@@ -7,7 +7,8 @@
     [clj-time.core :as time]
     [oph.common.util.util :refer [uusin-muokkausaika-tai-nykyhetki]]
     [schema.core :as s] )
-  (:import java.io.ByteArrayInputStream))
+  (:import java.io.ByteArrayInputStream
+           org.joda.time.DateTimeZone))
 
 (def ^:private http-date-format
   (->
@@ -34,9 +35,10 @@
       nil)))
 
 (defn try-parse-local-date-with-tz
+  "Use Helsinki time zone to adjust time zone, not system default."
   [f d]
   (try
-    (time-coerce/to-local-date (time/to-time-zone (parse (formatter f) d) (time/default-time-zone)))
+    (time-coerce/to-local-date (time/to-time-zone (parse (formatter f) d) (DateTimeZone/forID "Europe/Helsinki")))
     (catch IllegalArgumentException e
       nil)))
 
