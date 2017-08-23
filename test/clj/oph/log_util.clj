@@ -20,12 +20,12 @@
 (defn log-through
   "Palauttaa logiin kirjoitetun viestin levelin ja sisällön kun kutsutaan funktiota f"
   [f]
-  (let [log (atom [])]
+  (let [log-contents (atom [])]
     (with-redefs [log/log* (fn [_ level _ msg]
-                             (swap! log conj [level msg]))]
-      (reset! log [])
+                             (swap! log-contents conj [level msg]))]
+      (reset! log-contents [])
       (f)
-      @log)))
+      @log-contents)))
 
 (defn log-validate
   [f expected-msg]
