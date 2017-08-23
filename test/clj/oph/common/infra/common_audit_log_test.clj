@@ -29,13 +29,13 @@
     )
 
   (testing "meta annettu mutta logisisältö puuttuu"
-    (konfiguroi-common-audit-lokitus test-environment-meta)
+    (konfiguroi-common-audit-lokitus (test-environment-meta "foo-app-name"))
     (is (thrown-with-msg? clojure.lang.ExceptionInfo #"Value does not match schema" (->audit-log-entry {})))
     )
 
   (testing "kaikki kentät annettu"
     (binding [*request-meta* test-request-meta]
-      (konfiguroi-common-audit-lokitus test-environment-meta)
+      (konfiguroi-common-audit-lokitus (test-environment-meta "foo-app-name"))
       (let [resp (->audit-log-entry {:operation   :paivitys
                                      :user {:oid  "henkiloOid"}
                                      :resource    "järjestämissopimus"
@@ -56,7 +56,7 @@
               (.contains resp
                 "\"delta\":[{\"op\":\"päivitys\",\"path\":\"alkupvm\",\"value\":\"01.08.2009\"},{\"op\":\"päivitys\",\"path\":\"loppupvm\",\"value\":\"31.07.2009\"}]")
               (.contains resp
-                "\"target\":{\"järjestämissopimus\":\"sopimusOid\",\"id\":\"paa-avain\"},\"serviceName\":\"aitu\",\"version\":1")
+                "\"target\":{\"järjestämissopimus\":\"sopimusOid\",\"id\":\"paa-avain\"},\"serviceName\":\"foo-app-name\",\"version\":1")
               (.contains resp
                 "\"user\":{\"oid\":\"henkiloOid\",\"ip\":\"192.168.50.1\",\"session\":\"955d43a3-c02d-4ab8-a61f-141f29c44a84\",\"userAgent\":\"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.90 Safari/537.36\"}")
               (.contains resp
