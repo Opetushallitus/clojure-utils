@@ -68,7 +68,7 @@
                         (.writeString json-generator (.toString c))))
 (json-gen/add-encoder org.joda.time.LocalDate
                       (fn [c json-generator]
-                        (.writeString json-generator (.toString c "yyyy-MM-dd"))))
+                        (.writeString json-generator (.toString c "dd.MM.yyyy"))))
 
 (defn konfiguroi-common-audit-lokitus [metadata]
   (log/info "Alustetaan common audit logituksen metadata arvoihin:" metadata)

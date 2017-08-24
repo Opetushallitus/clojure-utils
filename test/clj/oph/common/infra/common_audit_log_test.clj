@@ -79,7 +79,7 @@
                 "\"target\":{\"järjestämissopimus\":\"sopimusOid\",\"id\":\"paa-avain\"}")))
         (testing "delta"
           (is (.contains resp
-                "\"delta\":[{\"op\":\"päivitys\",\"path\":\"alkupvm\",\"value\":\"2009-08-01\"},{\"op\":\"päivitys\",\"path\":\"loppupvm\",\"value\":\"2009-07-31\"}]")))
+                "\"delta\":[{\"op\":\"päivitys\",\"path\":\"alkupvm\",\"value\":\"01.08.2009\"},{\"op\":\"päivitys\",\"path\":\"loppupvm\",\"value\":\"31.07.2009\"}]")))
         (testing "message"
           (is (.contains resp
                 "\"message\":\"Tämä on viesti.\"")))
