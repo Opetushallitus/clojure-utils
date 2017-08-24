@@ -108,7 +108,7 @@
   "Tallentaa requestista tietoa logitusta varten"
   [ring-handler]
   (fn [request]
-    (binding [*request-meta* {:user-agent (get (:headers request) "user-agent")
+    (binding [*request-meta* {:user-agent (get-in request [:headers "user-agent"])
                               :session    (get-in request [:cookies "ring-session" :value])
-                              :ip         (or (get (:headers request) "X-Forwarded-For") (:remote-addr request))}]
+                              :ip         (or (get-in request [:headers "X-Forwarded-For"]) (:remote-addr request))}]
       (ring-handler request))))
