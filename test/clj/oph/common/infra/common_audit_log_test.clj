@@ -1,3 +1,17 @@
+;; Copyright (c) 2013 The Finnish National Board of Education - Opetushallitus
+;;
+;; This program is free software:  Licensed under the EUPL, Version 1.1 or - as
+;; soon as they will be approved by the European Commission - subsequent versions
+;; of the EUPL (the "Licence");
+;;
+;; You may not use this work except in compliance with the Licence.
+;; You may obtain a copy of the Licence at: http://www.osor.eu/eupl/
+;;
+;; This program is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; European Union Public Licence for more details.
+
 (ns oph.common.infra.common-audit-log-test
   (:require [clojure.test :refer [deftest testing is are]]
             [cheshire.core :as json]
@@ -65,7 +79,7 @@
                 "\"target\":{\"järjestämissopimus\":\"sopimusOid\",\"id\":\"paa-avain\"}")))
         (testing "delta"
           (is (.contains resp
-                "\"delta\":[{\"op\":\"päivitys\",\"path\":\"alkupvm\",\"value\":\"01.08.2009\"},{\"op\":\"päivitys\",\"path\":\"loppupvm\",\"value\":\"31.07.2009\"}]")))
+                "\"delta\":[{\"op\":\"päivitys\",\"path\":\"alkupvm\",\"value\":\"2009-08-01\"},{\"op\":\"päivitys\",\"path\":\"loppupvm\",\"value\":\"2009-07-31\"}]")))
         (testing "message"
           (is (.contains resp
                 "\"message\":\"Tämä on viesti.\"")))
