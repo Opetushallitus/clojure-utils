@@ -30,6 +30,9 @@
    :service-name     app-name
    :application-type "virkailija"})
 
+(alusta-json-enkooderit)  ;; Tämä tarvitaan, jotta "lein test" menee läpi
+
+
 (deftest auditlogitus-test
 
   (testing "environment metaa ei ole annettu"
@@ -60,7 +63,7 @@
                                                     :value (time/local-date 2009 8 1)}
                                                    {:op "päivitys"
                                                     :path "loppupvm"
-                                                    :value (time/local-date 2009 7 31)}]
+                                                    :value (time/local-date 2010 7 31)}]
                                      :message     "Tämä on viesti."})
             ]
         ;; Ohitetaan muuttuvan "timestamp"-arvon tarkastelu ja logseq arvon juokseva numerointi
@@ -79,7 +82,7 @@
                 "\"target\":{\"järjestämissopimus\":\"sopimusOid\",\"id\":\"paa-avain\"}")))
         (testing "delta"
           (is (.contains resp
-                "\"delta\":[{\"op\":\"päivitys\",\"path\":\"alkupvm\",\"value\":\"01.08.2009\"},{\"op\":\"päivitys\",\"path\":\"loppupvm\",\"value\":\"31.07.2009\"}]")))
+                "\"delta\":[{\"op\":\"päivitys\",\"path\":\"alkupvm\",\"value\":\"01.08.2009\"},{\"op\":\"päivitys\",\"path\":\"loppupvm\",\"value\":\"31.07.2010\"}]")))
         (testing "message"
           (is (.contains resp
                 "\"message\":\"Tämä on viesti.\"")))
