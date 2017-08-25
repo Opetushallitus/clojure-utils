@@ -30,25 +30,19 @@
    :service-name     app-name
    :application-type "virkailija"})
 
-(alusta-json-enkooderit)  ;; Tämä tarvitaan, jotta "lein test" menee läpi
-
 
 (deftest auditlogitus-test
 
   (testing "environment metaa ei ole annettu"
-;    (is (thrown? AssertionError (->audit-log-entry {})))
-    (is (thrown-with-msg? clojure.lang.ExceptionInfo #"Value does not match schema" (->audit-log-entry {})))
-    )
+    (is (thrown-with-msg? clojure.lang.ExceptionInfo #"Value does not match schema" (->audit-log-entry {}))))
 
   (testing "environment meta on epävalidi"
     (konfiguroi-common-audit-lokitus {:service-name "foo-app-name"})
-    (is (thrown-with-msg? clojure.lang.ExceptionInfo #"Value does not match schema" (->audit-log-entry {})))
-    )
+    (is (thrown-with-msg? clojure.lang.ExceptionInfo #"Value does not match schema" (->audit-log-entry {}))))
 
   (testing "meta annettu mutta logisisältö puuttuu"
     (konfiguroi-common-audit-lokitus (test-environment-meta "foo-app-name"))
-    (is (thrown-with-msg? clojure.lang.ExceptionInfo #"Value does not match schema" (->audit-log-entry {})))
-    )
+    (is (thrown-with-msg? clojure.lang.ExceptionInfo #"Value does not match schema" (->audit-log-entry {}))))
 
   (testing "kaikki kentät annettu"
     (binding [*request-meta* test-request-meta]
@@ -85,6 +79,4 @@
                 "\"delta\":[{\"op\":\"päivitys\",\"path\":\"alkupvm\",\"value\":\"01.08.2009\"},{\"op\":\"päivitys\",\"path\":\"loppupvm\",\"value\":\"31.07.2010\"}]")))
         (testing "message"
           (is (.contains resp
-                "\"message\":\"Tämä on viesti.\"")))
-        )))
-  )
+                "\"message\":\"Tämä on viesti.\"")))))))
