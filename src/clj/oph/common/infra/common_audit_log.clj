@@ -107,5 +107,7 @@
   (fn [request]
     (binding [*request-meta* {:user-agent (get-in request [:headers "user-agent"])
                               :session    (get-in request [:cookies "ring-session" :value])
+                              ;; NB: Needs to be updated, if this will be used in the cloud environments:
+                              ;; https://github.com/Opetushallitus/java-utils/blob/c665b1d74533f3ebfbe53286454f954edd0062cc/java-http/src/main/java/fi/vm/sade/javautils/http/HttpServletRequestUtils.java#L11-L26
                               :ip         (or (get-in request [:headers "X-Forwarded-For"]) (:remote-addr request))}]
       (ring-handler request))))
